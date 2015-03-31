@@ -1,0 +1,25 @@
+apply plugin: 'java'
+
+sourceCompatibility: '1.8'
+
+version: 1.0
+
+jar {
+  manifest {
+    attributes 'Implementation-Title': 'TowerDefen(c|s)e',
+            'Implementation-Version': version
+  }
+}
+
+task dist(type: Zip) {
+  dependsOn spiJar
+  from 'src/dist'
+  into('libs') {
+    from spiJar.archivePath
+    from configurations.runtime
+  }
+}
+
+artifacts {
+  archives dist
+}
