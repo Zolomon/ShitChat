@@ -2,6 +2,7 @@ package com.zolomon.eda095.project;
 
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 /**
  * Created by zol on 3/31/2015.
@@ -10,9 +11,11 @@ public class LobbyClientOutputThread extends Thread {
 
     private final PrintWriter writer;
     private LobbyConnection connection;
+    private ConcurrentLinkedDeque<LobbyMessage> outputMessageQueue;
 
-    public LobbyClientOutputThread(LobbyConnection connection, OutputStream outputStream) {
+    public LobbyClientOutputThread(LobbyConnection connection, OutputStream outputStream, ConcurrentLinkedDeque<LobbyMessage> outputMessageQueue) {
         this.connection = connection;
+        this.outputMessageQueue = outputMessageQueue;
         this.writer = new PrintWriter(outputStream);
     }
 
@@ -20,7 +23,8 @@ public class LobbyClientOutputThread extends Thread {
     public void run() {
         Lobby lobby = connection.getLobby();
         while (connection.isRunning()) {
-
+            LobbyMessage msg = outputMessageQueue.pollFirst();
+            writer.write(msg.getMessage());
         }
     }
 }

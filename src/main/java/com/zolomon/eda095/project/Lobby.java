@@ -31,4 +31,16 @@ public class Lobby {
     public ConcurrentLinkedDeque<LobbyConnection> getConnections() {
         return connections;
     }
+
+    public void broadcastMessage(LobbyMessage message) {
+        for(LobbyConnection con : connections) {
+            con.pushMsg(message);
+        }
+    }
+
+    public void input(LobbyMessage message) {
+        for (LobbyConnection con : connections) {
+            con.pushMsg(message);
+        }
+    }
 }

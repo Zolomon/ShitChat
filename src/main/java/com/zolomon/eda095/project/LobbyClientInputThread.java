@@ -1,6 +1,7 @@
 package com.zolomon.eda095.project;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
@@ -20,7 +21,13 @@ public class LobbyClientInputThread extends Thread {
     @Override
     public void run() {
         while(connection.isRunning()) {
-
+            try {
+                String line = reader.readLine();
+                //connection.pushMsg(new UserChatMessage(connection.getUsername(), line));
+                connection.sendInput(new UserChatMessage(connection.getUsername(), line));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

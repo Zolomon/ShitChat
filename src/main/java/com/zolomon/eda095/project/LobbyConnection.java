@@ -2,6 +2,7 @@ package com.zolomon.eda095.project;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 /**
  * Created by 23060835 on 3/31/15.
@@ -14,17 +15,19 @@ public class LobbyConnection {
     private LobbyClientInputThread inputThread;
     private LobbyClientOutputThread outputThread;
     private String lastMessage;
+    private ConcurrentLinkedDeque<LobbyMessage> outputMessageQueue;
 
     public LobbyConnection(Socket socket, Lobby lobby) {
         this.socket = socket;
         this.lobby = lobby;
+        this.outputMessageQueue = new ConcurrentLinkedDeque<>();
         createInputThread(socket);
         createOutputThread(socket);
     }
 
     private void createOutputThread(Socket socket) {
         try {
-            this.outputThread = new LobbyClientOutputThread(this, socket.getOutputStream());
+            this.outputThread = new LobbyClientOutputThread(this, socket.getOutputStream(), this.outputMessageQueue);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -51,9 +54,14 @@ public class LobbyConnection {
         return username;
     }
 
+    public void broadcastMsg(LobbyMessage message) {
+
+    }
+
     public void pushMsg(LobbyMessage message) {
-        String msg = message.getMessage();
+        System.out.println("[" + socket.getInetAddress() + ": " + message.getMessage() + "]");
         // TODO(zol): Write message
+        lobby.broadcastMessage(message);
     }
 
     public void start() {
@@ -70,5 +78,9 @@ public class LobbyConnection {
 
     public Lobby getLobby() {
         return this.lobby;
+    }
+
+    public void sendInput(UserChatMessage message) {
+        lobby.input(message);
     }
 }
