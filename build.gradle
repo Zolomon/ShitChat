@@ -1,25 +1,14 @@
 apply plugin: 'java'
+apply plugin: 'application'
 
-sourceCompatibility: '1.8'
+sourceCompatibility = '1.7'
+version = '1.0'
 
-version: 1.0
+mainClassName = 'com.zolomon.eda095.project.Main'
 
 jar {
   manifest {
     attributes 'Implementation-Title': 'TowerDefen(c|s)e',
             'Implementation-Version': version
   }
-}
-
-task dist(type: Zip) {
-  dependsOn spiJar
-  from 'src/dist'
-  into('libs') {
-    from spiJar.archivePath
-    from configurations.runtime
-  }
-}
-
-artifacts {
-  archives dist
 }

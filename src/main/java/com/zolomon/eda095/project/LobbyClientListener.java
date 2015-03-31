@@ -33,6 +33,7 @@ public class LobbyClientListener extends Thread {
         while(isRunning) {
             try {
                 Socket socket = server.accept();
+                System.out.println("["+socket.getInetAddress().toString()+" connected]");
                 LobbyConnection connection = new LobbyConnection(socket, lobby);
                 connections.add(connection);
 
