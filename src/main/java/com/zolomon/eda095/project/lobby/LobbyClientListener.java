@@ -1,11 +1,9 @@
-package com.zolomon.eda095.project;
+package com.zolomon.eda095.project.lobby;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ConcurrentModificationException;
 import java.util.concurrent.ConcurrentLinkedDeque;
-import java.util.concurrent.LinkedBlockingDeque;
 
 /**
  * Created by 23060835 on 3/31/15.
@@ -32,17 +30,18 @@ public class LobbyClientListener extends Thread {
     @Override
     public void run() {
         System.out.println("[Listening for connections on port " + port + "]");
-        while(isRunning) {
+        while (isRunning) {
             try {
                 Socket socket = server.accept();
 
-                System.out.println("["+socket.getInetAddress().toString()+" connected]");
+                System.out.println("[" + socket.getInetAddress().toString() + " connected]");
 
                 LobbyConnection connection = new LobbyConnection(socket, lobby);
                 connections.add(connection);
                 connection.start();
 
-                lobby.broadcastMessage(new NewUserConnectedMessage("Lobby", connection));
+                lobby.broadcastMessage(new LobbyMessage("Lobby", connection.getState().username +
+                        " has connected"));
             } catch (IOException e) {
                 e.printStackTrace();
                 isRunning = false;

@@ -1,8 +1,8 @@
-package com.zolomon.eda095.project;
+package com.zolomon.eda095.project.lobby;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.ArrayList;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -14,27 +14,33 @@ public class LobbyConnection {
     private final Socket socket;
     private Lobby lobby;
     private String username;
+    private LobbyClientState state;
     private LobbyClientInputThread inputThread;
     private LobbyClientOutputThread outputThread;
     private LinkedBlockingDeque<LobbyMessage> outputMessageQueue;
     private boolean isLoggedIn;
     private boolean isRunning;
 
-    // TODO(zol): Need to fix some kind of login manager
-
     public LobbyConnection(Socket socket, Lobby lobby) {
         this.socket = socket;
         this.lobby = lobby;
         this.outputMessageQueue = new LinkedBlockingDeque<>();
+        state = new LobbyClientState();
 
         // TODO(zol): Figure out a nice way to handle states, EX: finite state machine
-        this.outputMessageQueue.addLast(new UserChatMessage("Lobby", "Welcome!"));
-        this.outputMessageQueue.addLast(new UserChatMessage("Lobby","Please enter your username"));
+        this.outputMessageQueue.addLast(new LobbyMessage("Lobby", "Welcome!"));
+        this.outputMessageQueue.addLast(new LobbyMessage("Lobby", "Please enter your username"));
 
         isRunning = true;
 
         createInputThread(socket);
         createOutputThread(socket);
+    }
+
+    // TODO(zol): Need to fix some kind of login manager
+
+    public LobbyClientState getState() {
+        return state;
     }
 
     private void createOutputThread(Socket socket) {
@@ -74,10 +80,6 @@ public class LobbyConnection {
     }
 
     public synchronized boolean isRunning() {
-//        if (lastMessage.equals("/quit")) {
-//            return false;
-//        }
-//        return true;
         return isRunning;
     }
 
@@ -85,13 +87,15 @@ public class LobbyConnection {
         return this.lobby;
     }
 
-    public void sendInput(UserChatMessage message) {
+    public void sendInput(LobbyMessage message) {
+        message.setConnection(this);
+
         Pattern pattern = Pattern.compile("/name (?<name>.*)");
         Matcher matcher = pattern.matcher(message.getMessage());
 
         if (matcher.matches()) {
             username = matcher.group(1);
-            lobby.broadcastMessage(new UserChatMessage("Lobby", username + " has logged in."));
+            lobby.broadcastMessage(new LobbyMessage("Lobby", username + " has logged in."));
             isLoggedIn = true;
         }
 
@@ -112,5 +116,11 @@ public class LobbyConnection {
 
     public boolean isLoggedIn() {
         return isLoggedIn;
+    }
+
+    public void outputMessages(ArrayList<LobbyMessage> lobbyMessages) {
+        for(LobbyMessage m : lobbyMessages) {
+            outputMessage(m);
+        }
     }
 }

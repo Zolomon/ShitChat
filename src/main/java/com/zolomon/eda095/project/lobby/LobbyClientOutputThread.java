@@ -1,8 +1,7 @@
-package com.zolomon.eda095.project;
+package com.zolomon.eda095.project.lobby;
 
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.LinkedBlockingDeque;
 
 /**
