@@ -3,6 +3,7 @@ package com.zolomon.eda095.project;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.LinkedBlockingDeque;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -13,11 +14,9 @@ public class LobbyConnection {
     private final Socket socket;
     private Lobby lobby;
     private String username;
-    private CallbackInterface onDisconnectCallback;
     private LobbyClientInputThread inputThread;
     private LobbyClientOutputThread outputThread;
-    private String lastMessage;
-    private ConcurrentLinkedDeque<LobbyMessage> outputMessageQueue;
+    private LinkedBlockingDeque<LobbyMessage> outputMessageQueue;
     private boolean isLoggedIn;
     private boolean isRunning;
 
@@ -26,7 +25,7 @@ public class LobbyConnection {
     public LobbyConnection(Socket socket, Lobby lobby) {
         this.socket = socket;
         this.lobby = lobby;
-        this.outputMessageQueue = new ConcurrentLinkedDeque<>();
+        this.outputMessageQueue = new LinkedBlockingDeque<>();
 
         // TODO(zol): Figure out a nice way to handle states, EX: finite state machine
         this.outputMessageQueue.addLast(new UserChatMessage("Lobby", "Welcome!"));
@@ -68,16 +67,6 @@ public class LobbyConnection {
         return username;
     }
 
-    public void broadcastMsg(LobbyMessage message) {
-
-    }
-
-    public void pushMsg(LobbyMessage message) {
-        System.out.println("[" + socket.getInetAddress() + ": " + message.getMessage() + "]");
-        // TODO(zol): Write message
-        lobby.broadcastMessage(message);
-    }
-
     public void start() {
         inputThread.start();
         outputThread.start();
@@ -102,6 +91,7 @@ public class LobbyConnection {
 
         if (matcher.matches()) {
             username = matcher.group(1);
+            lobby.broadcastMessage(new UserChatMessage("Lobby", username + " has logged in."));
             isLoggedIn = true;
         }
 

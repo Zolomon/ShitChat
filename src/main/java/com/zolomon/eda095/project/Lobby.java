@@ -1,6 +1,7 @@
 package com.zolomon.eda095.project;
 
 import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.LinkedBlockingDeque;
 
 /**
  * Created by 23060835 on 3/31/15.
@@ -8,15 +9,15 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 public class Lobby {
     private LobbyClientListener listener;
     private ConcurrentLinkedDeque<LobbyConnection> connections;
-    private ConcurrentLinkedDeque<LobbyMessage> clientMessages;
+    private LinkedBlockingDeque<LobbyMessage> clientMessages;
 
     /**
-     * Start the lobby listening on the specified {@link port}.
+     * Start the lobby listening on the specified {@code port}.
      * @param port The port to listen on
      */
     public Lobby(int port) {
         listener = new LobbyClientListener(this, port);
-        clientMessages = new ConcurrentLinkedDeque<>();
+        clientMessages = new LinkedBlockingDeque<>();
     }
 
     /**
@@ -24,16 +25,6 @@ public class Lobby {
      */
     public void start() {
         listener.start();
-    }
-
-    /**
-     * Broadcast a new connection to all clients notifying them of a new connection.
-     * @param connection
-     */
-    public synchronized void broadcastNewConnection(LobbyConnection connection) {
-        for (LobbyConnection con : connections) {
-            con.pushMsg(new NewUserConnectedMessage("Lobby", connection));
-        }
     }
 
     public ConcurrentLinkedDeque<LobbyConnection> getConnections() {
@@ -50,6 +41,7 @@ public class Lobby {
      * @param message Message to broadcast to clients
      */
     public void broadcastMessage(LobbyMessage message) {
+        System.out.println("Broadcasting message: " + message);
         for (LobbyConnection con : connections) {
             con.outputMessage(message);
         }
@@ -65,6 +57,8 @@ public class Lobby {
      * @param message Input message to process
      */
     public void input(LobbyMessage message) {
-        clientMessages.addLast(message);
+        //clientMessages.addLast(message);
+
+        broadcastMessage(message);
     }
 }
