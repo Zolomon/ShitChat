@@ -7,6 +7,11 @@ import java.io.InputStreamReader;
 
 /**
  * Created by zol on 3/31/2015.
+ *
+ * The LobbyClientInputThread reads input from a socket and sends it to the Lobby for processing
+ *
+ * TODO(zol): Change the structure so that chat message input is sent to the lobby and mouse input
+ * TODO(zol): (clicks) is sent to the Session manager that tracks the world state.
  */
 public class LobbyClientInputThread extends Thread {
 
@@ -20,11 +25,15 @@ public class LobbyClientInputThread extends Thread {
 
     @Override
     public void run() {
-        while(connection.isRunning()) {
+        while (connection.isRunning()) {
             try {
                 String line = reader.readLine();
-                //connection.pushMsg(new UserChatMessage(connection.getUsername(), line));
-                connection.sendInput(new UserChatMessage(connection.getUsername(), line));
+                System.out.println("Read: " + line);
+                if (connection.isLoggedIn()) {
+                    connection.sendInput(new UserChatMessage(connection.getUsername(), line));
+                } else {
+                    connection.sendInput(new UserChatMessage("", line));
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }

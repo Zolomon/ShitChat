@@ -10,5 +10,17 @@ public abstract class LobbyMessage {
         this.author = author;
     }
 
+    /**
+     * Get the message part
+     * @return The message
+     */
     public abstract String getMessage();
+
+    /**
+     * Returns the string representation of this message.
+     * @return The message
+     */
+    public String toString() {
+        return this.author + ": " + getMessage();
+    }
 }

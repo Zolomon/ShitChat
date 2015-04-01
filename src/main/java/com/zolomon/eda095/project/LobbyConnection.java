@@ -3,6 +3,8 @@ package com.zolomon.eda095.project;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by 23060835 on 3/31/15.
@@ -16,11 +18,22 @@ public class LobbyConnection {
     private LobbyClientOutputThread outputThread;
     private String lastMessage;
     private ConcurrentLinkedDeque<LobbyMessage> outputMessageQueue;
+    private boolean isLoggedIn;
+    private boolean isRunning;
+
+    // TODO(zol): Need to fix some kind of login manager
 
     public LobbyConnection(Socket socket, Lobby lobby) {
         this.socket = socket;
         this.lobby = lobby;
         this.outputMessageQueue = new ConcurrentLinkedDeque<>();
+
+        // TODO(zol): Figure out a nice way to handle states, EX: finite state machine
+        this.outputMessageQueue.addLast(new UserChatMessage("Lobby", "Welcome!"));
+        this.outputMessageQueue.addLast(new UserChatMessage("Lobby","Please enter your username"));
+
+        isRunning = true;
+
         createInputThread(socket);
         createOutputThread(socket);
     }
@@ -47,6 +60,7 @@ public class LobbyConnection {
         // TODO(zol): disconnect if login failed
         // TODO(zol): Set username to what it should be
         username = "Zolomon";
+        isLoggedIn = true;
         return true;
     }
 
@@ -67,13 +81,15 @@ public class LobbyConnection {
     public void start() {
         inputThread.start();
         outputThread.start();
+        System.out.printf("Client connection started.");
     }
 
     public synchronized boolean isRunning() {
-        if (lastMessage.equals("/quit")) {
-            return false;
-        }
-        return true;
+//        if (lastMessage.equals("/quit")) {
+//            return false;
+//        }
+//        return true;
+        return isRunning;
     }
 
     public Lobby getLobby() {
@@ -81,6 +97,30 @@ public class LobbyConnection {
     }
 
     public void sendInput(UserChatMessage message) {
+        Pattern pattern = Pattern.compile("/name (?<name>.*)");
+        Matcher matcher = pattern.matcher(message.getMessage());
+
+        if (matcher.matches()) {
+            username = matcher.group(1);
+            isLoggedIn = true;
+        }
+
+        pattern = Pattern.compile("/quit");
+        matcher = pattern.matcher(message.getMessage());
+        if (matcher.matches()) {
+            synchronized (this) {
+                isRunning = false;
+            }
+        }
+
         lobby.input(message);
+    }
+
+    public void outputMessage(LobbyMessage message) {
+        outputMessageQueue.addLast(message);
+    }
+
+    public boolean isLoggedIn() {
+        return isLoggedIn;
     }
 }

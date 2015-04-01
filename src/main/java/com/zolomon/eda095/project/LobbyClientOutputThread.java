@@ -6,6 +6,8 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 
 /**
  * Created by zol on 3/31/2015.
+ *
+ * Handles writing of output to the socket.
  */
 public class LobbyClientOutputThread extends Thread {
 
@@ -25,6 +27,8 @@ public class LobbyClientOutputThread extends Thread {
         while (connection.isRunning()) {
             LobbyMessage msg = outputMessageQueue.pollFirst();
             writer.write(msg.getMessage());
+            writer.flush();
         }
+        writer.close();
     }
 }
