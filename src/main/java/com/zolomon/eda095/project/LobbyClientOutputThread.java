@@ -3,6 +3,7 @@ package com.zolomon.eda095.project;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.LinkedBlockingDeque;
 
 /**
  * Created by zol on 3/31/2015.
@@ -13,9 +14,9 @@ public class LobbyClientOutputThread extends Thread {
 
     private final PrintWriter writer;
     private LobbyConnection connection;
-    private ConcurrentLinkedDeque<LobbyMessage> outputMessageQueue;
+    private LinkedBlockingDeque<LobbyMessage> outputMessageQueue;
 
-    public LobbyClientOutputThread(LobbyConnection connection, OutputStream outputStream, ConcurrentLinkedDeque<LobbyMessage> outputMessageQueue) {
+    public LobbyClientOutputThread(LobbyConnection connection, OutputStream outputStream, LinkedBlockingDeque<LobbyMessage> outputMessageQueue) {
         this.connection = connection;
         this.outputMessageQueue = outputMessageQueue;
         this.writer = new PrintWriter(outputStream);
@@ -25,8 +26,15 @@ public class LobbyClientOutputThread extends Thread {
     public void run() {
         Lobby lobby = connection.getLobby();
         while (connection.isRunning()) {
-            LobbyMessage msg = outputMessageQueue.pollFirst();
-            writer.write(msg.getMessage());
+            LobbyMessage msg = null;
+            try {
+                msg = outputMessageQueue.takeFirst();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                System.out.println("Client " + connection.getUsername() + " was interrupted while waiting for a connection.");
+                break;
+            }
+            writer.write(msg.getMessage() + "\n");
             writer.flush();
         }
         writer.close();
