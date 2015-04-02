@@ -64,10 +64,8 @@ public class Lobby {
      * @param message Input message to process
      */
     public void input(LobbyMessage message) {
-        //clientMessages.addLast(message);
-        Consumer<LobbyMessage> callback = commandParser.parseMessage(message);
-        callback.accept(message);
-        //broadcastMessage(message);
+        CommandParser.CommandKeyValueEntry callback = commandParser.parseMessage(message);
+        callback.callback.accept(message, callback);
     }
 
     public void removeConnection(LobbyConnection connection) {

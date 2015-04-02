@@ -33,7 +33,7 @@ public class LobbyClientOutputThread extends Thread {
                 System.out.println("Client " + connection.getUsername() + " was interrupted while waiting for a connection.");
                 break;
             }
-            writer.write(msg.getMessage() + "\n");
+            writer.write(msg + "\n");
             writer.flush();
         }
         writer.close();

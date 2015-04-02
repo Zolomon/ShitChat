@@ -39,9 +39,6 @@ public class LobbyClientListener extends Thread {
                 LobbyConnection connection = new LobbyConnection(socket, lobby);
                 connections.add(connection);
                 connection.start();
-
-                lobby.broadcastMessage(new LobbyMessage("Lobby", connection.getState().username +
-                        " has connected"));
             } catch (IOException e) {
                 e.printStackTrace();
                 isRunning = false;
