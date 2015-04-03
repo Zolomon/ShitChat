@@ -1,6 +1,8 @@
 package com.zolomon.eda095.project.lobby.commands;
 
 import com.zolomon.eda095.project.lobby.Lobby;
+import com.zolomon.eda095.project.lobby.LobbyClientState;
+import com.zolomon.eda095.project.lobby.LobbyConnection;
 import com.zolomon.eda095.project.lobby.LobbyMessage;
 
 import java.util.ArrayList;
@@ -41,8 +43,9 @@ public class CommandParser {
     private void setupParsers(Lobby lobby) {
         addParser("quit", "\\/quit", (message, ckve) -> {
             synchronized (this) {
+                System.out.println(Thread.currentThread().getId());
                 message.getConnection().getState().isLoggedIn = false;
-
+                message.getConnection().getState().setRunning(false);
                 lobby.removeConnection(message.getConnection());
             }
         });
@@ -53,11 +56,13 @@ public class CommandParser {
                 String username = matcher.group("username");
                 boolean authenticated = lobby.authenticate(message);
                 if (authenticated) {
-                    message.getConnection().getState().username = username;
-                    message.getConnection().getState().isLoggedIn = true;
-                    message.getConnection().outputMessage(new LobbyMessage("Lobby", "You logged in successfully"));
-                    message.getConnection().outputMessage(new LobbyMessage("Lobby", "Currently logged in users: "));
-                    message.getConnection().outputMessages(lobby.showUsers());
+                    LobbyConnection connection = message.getConnection();
+                    LobbyClientState state = connection.getState();
+                    state.username = username;
+                    state.isLoggedIn = true;
+                    connection.outputMessage(new LobbyMessage("Lobby", "You logged in successfully"));
+                    connection.outputMessage(new LobbyMessage("Lobby", "Currently logged in users: "));
+                    connection.outputMessages(lobby.showUsers());
                     lobby.broadcastMessage(new LobbyMessage("Lobby", username + " has joined the club."));
                 }
             }

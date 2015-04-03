@@ -23,9 +23,8 @@ public class LobbyClientOutputThread extends Thread {
 
     @Override
     public void run() {
-        Lobby lobby = connection.getLobby();
-        while (connection.isRunning()) {
-            LobbyMessage msg = null;
+        while (connection.getState().isRunning()) {
+            LobbyMessage msg;
             try {
                 msg = outputMessageQueue.takeFirst();
             } catch (InterruptedException e) {

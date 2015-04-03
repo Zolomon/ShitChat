@@ -25,10 +25,15 @@ public class LobbyClientInputThread extends Thread {
 
     @Override
     public void run() {
-        while (connection.isRunning()) {
+        while (connection.getState().isRunning()) {
             String line = "";
             try {
                 line = reader.readLine();
+                if (line == null) {
+                    // Line is null when the user has disconnected
+                    reader.close();
+                    break;
+                }
                 System.out.println("Read: " + line);
             } catch (IOException e) {
                 e.printStackTrace();

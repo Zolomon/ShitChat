@@ -6,8 +6,16 @@ package com.zolomon.eda095.project.lobby;
 public class LobbyClientState {
     public boolean isLoggedIn;
     public String username;
+    private boolean isRunning;
 
     public LobbyClientState() {
+    }
 
+    public synchronized boolean isRunning() {
+        return isRunning;
+    }
+
+    public synchronized void setRunning(boolean isRunning) {
+        this.isRunning = isRunning;
     }
 }

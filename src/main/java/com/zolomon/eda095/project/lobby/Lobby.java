@@ -32,6 +32,19 @@ public class Lobby {
      */
     public void start() {
         listener.start();
+        LobbyMessage message;
+        while(true) {
+            System.out.println("[Waiting for a message...]");
+            try {
+                message = clientMessages.take();
+                System.out.println("[Received '"+message.toString()+"']" );
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                break;
+            }
+            CommandParser.CommandKeyValueEntry callback = commandParser.parseMessage(message);
+            callback.callback.accept(message, callback);
+        }
     }
 
     public ConcurrentLinkedDeque<LobbyConnection> getConnections() {
@@ -64,8 +77,7 @@ public class Lobby {
      * @param message Input message to process
      */
     public void input(LobbyMessage message) {
-        CommandParser.CommandKeyValueEntry callback = commandParser.parseMessage(message);
-        callback.callback.accept(message, callback);
+        clientMessages.offer(message);
     }
 
     public void removeConnection(LobbyConnection connection) {

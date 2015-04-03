@@ -18,8 +18,6 @@ public class LobbyConnection {
     private LobbyClientInputThread inputThread;
     private LobbyClientOutputThread outputThread;
     private LinkedBlockingDeque<LobbyMessage> outputMessageQueue;
-    private boolean isLoggedIn;
-    private boolean isRunning;
 
     public LobbyConnection(Socket socket, Lobby lobby) {
         this.socket = socket;
@@ -30,8 +28,6 @@ public class LobbyConnection {
         // TODO(zol): Figure out a nice way to handle states, EX: finite state machine
         this.outputMessageQueue.addLast(new LobbyMessage("Lobby", "Welcome!"));
         this.outputMessageQueue.addLast(new LobbyMessage("Lobby", "Please enter your username"));
-
-        isRunning = true;
 
         createInputThread(socket);
         createOutputThread(socket);
@@ -59,63 +55,25 @@ public class LobbyConnection {
         }
     }
 
-    public boolean login() {
-
-        // TODO(zol): if new user, create account
-        // TODO(zol): disconnect if login failed
-        // TODO(zol): Set username to what it should be
-        username = "Zolomon";
-        isLoggedIn = true;
-        return true;
-    }
-
     public String getUsername() {
         return username;
     }
 
     public void start() {
+        state.setRunning(true);
         inputThread.start();
         outputThread.start();
         System.out.printf("Client connection started.");
     }
 
-    public synchronized boolean isRunning() {
-        return isRunning;
-    }
-
-    public Lobby getLobby() {
-        return this.lobby;
-    }
-
     public void sendInput(LobbyMessage message) {
         message.setConnection(this);
-
-        Pattern pattern = Pattern.compile("/name (?<name>.*)");
-        Matcher matcher = pattern.matcher(message.getMessage());
-
-        if (matcher.matches()) {
-            username = matcher.group(1);
-            lobby.broadcastMessage(new LobbyMessage("Lobby", username + " has logged in."));
-            isLoggedIn = true;
-        }
-
-        pattern = Pattern.compile("/quit");
-        matcher = pattern.matcher(message.getMessage());
-        if (matcher.matches()) {
-            synchronized (this) {
-                isRunning = false;
-            }
-        }
 
         lobby.input(message);
     }
 
     public void outputMessage(LobbyMessage message) {
         outputMessageQueue.addLast(message);
-    }
-
-    public boolean isLoggedIn() {
-        return isLoggedIn;
     }
 
     public void outputMessages(ArrayList<LobbyMessage> lobbyMessages) {
