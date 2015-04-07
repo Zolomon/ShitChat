@@ -1,4 +1,4 @@
-package com.zolomon.eda095.project.lobby;
+package eda095.project.lobby;
 
 import java.io.OutputStream;
 import java.io.PrintWriter;

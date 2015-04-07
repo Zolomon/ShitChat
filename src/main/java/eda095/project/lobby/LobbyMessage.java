@@ -1,4 +1,4 @@
-package com.zolomon.eda095.project.lobby;
+package eda095.project.lobby;
 
 /**
  * Created by 23060835 on 3/31/15.

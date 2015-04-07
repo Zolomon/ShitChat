@@ -1,11 +1,10 @@
-package com.zolomon.eda095.project.lobby;
+package eda095.project.lobby;
 
-import com.zolomon.eda095.project.lobby.commands.CommandParser;
+import eda095.project.lobby.commands.CommandParser;
 
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.LinkedBlockingDeque;
-import java.util.function.Consumer;
 
 /**
  * Created by 23060835 on 3/31/15.

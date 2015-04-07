@@ -1,6 +1,6 @@
-package com.zolomon.eda095.project;
+package eda095.project;
 
-import com.zolomon.eda095.project.lobby.Lobby;
+import eda095.project.lobby.Lobby;
 
 public class Main {
 

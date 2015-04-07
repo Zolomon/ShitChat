@@ -1,4 +1,4 @@
-package com.zolomon.eda095.project.lobby;
+package eda095.project.lobby;
 
 import java.io.BufferedReader;
 import java.io.IOException;

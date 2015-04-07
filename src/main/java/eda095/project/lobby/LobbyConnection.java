@@ -1,11 +1,9 @@
-package com.zolomon.eda095.project.lobby;
+package eda095.project.lobby;
 
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.concurrent.LinkedBlockingDeque;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Created by 23060835 on 3/31/15.

@@ -1,9 +1,9 @@
-package com.zolomon.eda095.project.lobby.commands;
+package eda095.project.lobby.commands;
 
-import com.zolomon.eda095.project.lobby.Lobby;
-import com.zolomon.eda095.project.lobby.LobbyClientState;
-import com.zolomon.eda095.project.lobby.LobbyConnection;
-import com.zolomon.eda095.project.lobby.LobbyMessage;
+import eda095.project.lobby.Lobby;
+import eda095.project.lobby.LobbyClientState;
+import eda095.project.lobby.LobbyConnection;
+import eda095.project.lobby.LobbyMessage;
 
 import java.util.ArrayList;
 import java.util.HashMap;
