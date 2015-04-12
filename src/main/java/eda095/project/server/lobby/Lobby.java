@@ -1,6 +1,6 @@
-package eda095.project.lobby;
+package eda095.project.server.lobby;
 
-import eda095.project.lobby.commands.CommandParser;
+import eda095.project.server.lobby.commands.CommandParser;
 
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentLinkedDeque;

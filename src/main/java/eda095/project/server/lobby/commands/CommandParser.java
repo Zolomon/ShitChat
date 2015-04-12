@@ -1,9 +1,9 @@
-package eda095.project.lobby.commands;
+package eda095.project.server.lobby.commands;
 
-import eda095.project.lobby.Lobby;
-import eda095.project.lobby.LobbyClientState;
-import eda095.project.lobby.LobbyConnection;
-import eda095.project.lobby.LobbyMessage;
+import eda095.project.server.lobby.Lobby;
+import eda095.project.server.lobby.LobbyClientState;
+import eda095.project.server.lobby.LobbyConnection;
+import eda095.project.server.lobby.LobbyMessage;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -1,6 +1,6 @@
-package eda095.project;
+package eda095.project.server;
 
-import eda095.project.lobby.Lobby;
+import eda095.project.server.lobby.Lobby;
 
 public class Main {
 

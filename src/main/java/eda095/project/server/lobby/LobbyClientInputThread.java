@@ -1,4 +1,4 @@
-package eda095.project.lobby;
+package eda095.project.server.lobby;
 
 import java.io.BufferedReader;
 import java.io.IOException;

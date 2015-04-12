@@ -1,4 +1,4 @@
-package eda095.project.lobby;
+package eda095.project.server.lobby;
 
 /**
  * Created by zol on 01/04/15.
