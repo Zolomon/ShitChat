@@ -17,10 +17,8 @@ public class Main {
             mb.waitForConnectionToTerminate();
             System.out.println("Connection terminated.");
             s.close();
-            mb.addOutgoing("Hey, wake up output thread!"); // TODO: Fix this more elegantly.
-            //ot.interrupt();
             cw.destroy();
-            System.exit(0);
+            //System.exit(0);
         } catch (UnknownHostException e) {
             System.err.println("Couldn't find host, exiting.");
             System.exit(1);
@@ -28,5 +26,6 @@ public class Main {
             System.err.println("IOException when opening socket to host, exiting.");
             System.exit(1);
         }
+        System.out.println("Shutting down client.");
     }
 }

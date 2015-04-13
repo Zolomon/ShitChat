@@ -49,13 +49,13 @@ public class MessageBox {
 
     public String getOutgoing() {
         synchronized (outgoing) {
-            while (outgoing.size() == 0)
+            while (!terminatedConnection && outgoing.size() == 0)
                 try {
                     outgoing.wait();
                 } catch (InterruptedException e) {
-                    System.err.println("InterruptedException while waiting for thread");
+                    System.err.println("MessageBox.getOutgoing(): InterruptedException while waiting for thread");
                 }
-            return outgoing.remove(0);
+            return (outgoing.size() > 0 ? outgoing.remove(0) : null);
         }
     }
     /*
