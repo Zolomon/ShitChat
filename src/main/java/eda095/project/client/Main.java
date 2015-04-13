@@ -9,11 +9,18 @@ public class Main {
         try {
             Socket s = new Socket("localhost", 8081);
             ChatWindow cw = new ChatWindow(400, 300, "ShitChat", mb);
-            InputThread it = new InputThread(cw, s.getInputStream());
-            OutputThread ot = new OutputThread(s.getOutputStream(), mb);
+            InputThread it = new InputThread(mb, cw, s.getInputStream());
+            OutputThread ot = new OutputThread(s, mb);
             it.start();
             ot.start();
             cw.show();
+            mb.waitForConnectionToTerminate();
+            System.out.println("Connection terminated.");
+            s.close();
+            mb.addOutgoing("Hey, wake up output thread!"); // TODO: Fix this more elegantly.
+            //ot.interrupt();
+            cw.destroy();
+            System.exit(0);
         } catch (UnknownHostException e) {
             System.err.println("Couldn't find host, exiting.");
             System.exit(1);

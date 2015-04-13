@@ -6,10 +6,12 @@ import java.io.*;
 public class InputThread extends Thread {
     ChatWindow cw;
     InputStream is;
+    MessageBox mb;
 
-    public InputThread(ChatWindow cw, InputStream is) {
-        this.is = is;
+    public InputThread(MessageBox mb, ChatWindow cw, InputStream is) {
+        this.mb = mb;
         this.cw = cw;
+        this.is = is;
     }
 
     public void run() {
@@ -20,9 +22,10 @@ public class InputThread extends Thread {
                 // Parse json!
                 cw.add(line);
             }
-            System.out.println("Connection terminated.");
+            mb.setConnectionTerminated(true);             
         } catch (IOException e) {
             System.out.println("IOException in ClientReadThread:\n"+e.getMessage());
         }  
+        System.out.println("InputThread shutting down");
     }
 }

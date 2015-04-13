@@ -5,10 +5,30 @@ import java.util.ArrayList;
 public class MessageBox {
     private ArrayList<String> outgoing;
     private ArrayList<String> incoming;
+    private boolean terminatedConnection;
 
     public MessageBox() {
         outgoing = new ArrayList<String>();
         incoming = new ArrayList<String>();
+        terminatedConnection = false;
+    }
+    
+    public void setConnectionTerminated(boolean t) {
+        synchronized (this) {
+            terminatedConnection = t; 
+            notifyAll();
+        }
+    }
+
+    public void waitForConnectionToTerminate() {
+        synchronized (this) {
+            while (!terminatedConnection) 
+                try {
+                    wait();
+                } catch (InterruptedException e) {
+                    System.err.println("Interrupted while waiting for connection to terminate!");
+                }
+        }
     }
 
     public void addOutgoing(String msg) {
