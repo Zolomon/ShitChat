@@ -34,6 +34,7 @@ public class ChatWindow {
     private SubmitHandler handler;
     private boolean       destroyed;
     private SubmitThread  submitter;
+    private MessageBox    mb;
 
     /**
      * Constructs a ChatWindow at a given position on the screen and with
@@ -47,7 +48,9 @@ public class ChatWindow {
      * @param title  a String containing the title to be displayed in
      *               the title bar of the window
      */
-    public ChatWindow(int x,int y,String title) {
+    public ChatWindow(int x,int y,String title, MessageBox mb) {
+        this.mb = mb;
+
         theWindow = new Frame(title);
         theWindow.setLocation(x,y);
 
@@ -155,6 +158,9 @@ public class ChatWindow {
     public void messageEntered(String message) {
         // Default implementation: do nothing
         // Overload messageEntered in a subclass to ChatWindow.
+        System.out.println("Adding outgoing");
+        mb.addOutgoing(message);
+        System.out.println("Added outgoing");
     }
 
     private class SubmitHandler implements ActionListener {
