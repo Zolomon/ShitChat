@@ -1,4 +1,5 @@
 package eda095.project.server.lobby;
+import eda095.project.server.lobby.messages.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -26,25 +27,24 @@ public class LobbyClientInputThread extends Thread {
     @Override
     public void run() {
         while (connection.getState().isRunning()) {
-            String line = "";
             try {
-                line = reader.readLine();
+                String line = reader.readLine();
                 if (line == null) {
                     // Line is null when the user has disconnected
                     reader.close();
-                    break;
+                    return;
                 }
-                System.out.println("Read: " + line);
+                BroadcastMessage message;
+                if (connection.getState().isLoggedIn) {
+                    message = new BroadcastMessage(connection.getState().username, line);
+                } else {
+                    message = new BroadcastMessage("anonymous", line); // TODO: generate anonymous names somehow
+                }
+                connection.sendInput(message);
             } catch (IOException e) {
-                e.printStackTrace();
+                System.out.println("IOException: " + e.getMessage());
+                return;
             }
-            LobbyMessage message;
-            if (connection.getState().isLoggedIn) {
-                message = new LobbyMessage(connection.getState().username, line);
-            } else {
-                message = new LobbyMessage("", line);
-            }
-            connection.sendInput(message);
         }
     }
 }

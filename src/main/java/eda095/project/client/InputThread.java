@@ -7,11 +7,13 @@ public class InputThread extends Thread {
     ChatWindow cw;
     InputStream is;
     MessageBox mb;
+    CommandParser cp;
 
     public InputThread(MessageBox mb, ChatWindow cw, InputStream is) {
         this.mb = mb;
         this.cw = cw;
         this.is = is;
+        cp = new CommandParser(cw);
     }
 
     public void run() {
@@ -20,7 +22,9 @@ public class InputThread extends Thread {
             String line = ""; 
             while ((line = br.readLine()) != null) { 
                 // Parse json!
-                cw.add(line);
+                CommandParser.CommandKeyValueEntry callback = cp.parseMessage(line);
+                callback.callback.accept(line, callback);
+                System.out.println(line);
             }
             mb.setConnectionTerminated(true);             
         } catch (IOException e) {
