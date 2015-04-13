@@ -64,9 +64,21 @@ public class LobbyConnection {
         System.out.printf("Client connection started.");
     }
 
+    // How can we be sure that input and output threads terminate?
+    public void stop() {
+        state.setRunning(false);
+        state.isLoggedIn = false;
+        try {
+            socket.close();
+        } catch (IOException e) {
+            System.err.println("Failed stopping connection");
+            e.printStackTrace();
+        }
+        System.out.printf("Client connection stopped.");
+    }
+
     public void sendInput(LobbyMessage message) {
         message.setConnection(this);
-
         lobby.input(message);
     }
 

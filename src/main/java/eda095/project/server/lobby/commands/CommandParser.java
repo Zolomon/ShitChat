@@ -44,8 +44,7 @@ public class CommandParser {
         addParser("quit", "\\/quit", (message, ckve) -> {
             synchronized (this) {
                 System.out.println(Thread.currentThread().getId());
-                message.getConnection().getState().isLoggedIn = false;
-                message.getConnection().getState().setRunning(false);
+                message.getConnection().stop();
                 lobby.removeConnection(message.getConnection());
             }
         });
