@@ -34,12 +34,8 @@ public class LobbyClientInputThread extends Thread {
                     reader.close();
                     return;
                 }
-                BroadcastMessage message;
-                if (connection.getState().isLoggedIn) {
-                    message = new BroadcastMessage(connection.getState().username, line);
-                } else {
-                    message = new BroadcastMessage("anonymous", line); // TODO: generate anonymous names somehow
-                }
+                Message message;
+                message = new Message(line);
                 connection.sendInput(message);
             } catch (IOException e) {
                 System.out.println("IOException: " + e.getMessage());

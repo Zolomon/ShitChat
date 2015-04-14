@@ -24,7 +24,7 @@ public class OutputThread extends Thread {
         while (!s.isClosed()) {
             System.out.println("OutputThread: waiting for outgoing.");
             String userInput = mb.getOutgoing(); 
-            System.out.println("OutputThread: sent outgoing. os is open: " + s.isClosed());
+            System.out.println("OutputThread: sent outgoing. os is closed: " + s.isClosed());
             if (userInput != null)  {
                 out.println(userInput); 
             } else {

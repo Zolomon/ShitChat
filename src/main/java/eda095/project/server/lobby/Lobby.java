@@ -26,7 +26,7 @@ public class Lobby {
             System.out.println("[Waiting for a message...]");
             try {
                 message = clientMessages.take();
-                System.out.println("[Received '"+message.toString()+"']" );
+                System.out.println("[Received '"+message+"']" );
             } catch (InterruptedException e) {
                 e.printStackTrace();
                 break;
@@ -48,6 +48,14 @@ public class Lobby {
         System.out.println("Broadcasting message: " + message);
         for (LobbyConnection con : connections) {
             con.outputMessage(message);
+        }
+    }
+
+    public void whisperMessage(Whisper message) {
+        System.out.println("whispering: " + message);
+        for (LobbyConnection con : connections) {
+            if (message.isAuthorOrRecipient(con.getState().username))
+                con.outputMessage(message);
         }
     }
 

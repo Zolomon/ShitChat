@@ -19,11 +19,11 @@ public class LobbyConnection {
     private LobbyClientOutputThread outputThread;
     private LinkedBlockingDeque<Message> outputMessageQueue;
 
-    public LobbyConnection(Socket socket, Lobby lobby) {
+    public LobbyConnection(Socket socket, Lobby lobby, String username) {
         this.socket = socket;
         this.lobby = lobby;
         this.outputMessageQueue = new LinkedBlockingDeque<>();
-        state = new LobbyClientState();
+        state = new LobbyClientState(username);
 
         // TODO(zol): Figure out a nice way to handle states, EX: finite state machine
         this.outputMessageQueue.addLast(new ServerMessage("Welcome!"));

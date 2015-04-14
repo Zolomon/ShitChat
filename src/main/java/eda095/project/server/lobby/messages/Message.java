@@ -2,7 +2,7 @@ package eda095.project.server.lobby.messages;
 
 import eda095.project.server.lobby.LobbyConnection;
 
-public abstract class Message {
+public class Message {
     protected String message;
 
     private LobbyConnection connection;
@@ -14,7 +14,9 @@ public abstract class Message {
     public String getMessage() { 
         return message;
     }
-    public abstract String messageToString();
+    public String messageToString() {
+        return message;
+    }
     public String toString() {
         return messageToString(); 
     }

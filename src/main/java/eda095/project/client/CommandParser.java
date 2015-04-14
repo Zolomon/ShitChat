@@ -45,6 +45,16 @@ public class CommandParser {
                 cw.add(cMessage);
             }
         });
+        addParser("/whisper", "\\/whisper (?<author>\\w+) (?<recipient>\\w+) (?<message>.*)", (message, ckve) -> {
+            synchronized (this) {
+                Matcher matcher = ckve.pattern.matcher(message);
+                boolean matches = matcher.matches();
+                String author   = matcher.group("author");
+                String recipient= matcher.group("recipient");
+                String cMessage = matcher.group("message");
+                cw.add("whisper " + author + " -> " + recipient + ": " + cMessage);
+            }
+        });
     }
     private void addParser(String name, String regex, BiConsumer<String, CommandKeyValueEntry> callback) {
         patterns.add(new CommandKeyValueEntry(name, regex, callback));

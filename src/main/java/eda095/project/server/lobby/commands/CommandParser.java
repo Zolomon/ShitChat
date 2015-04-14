@@ -1,8 +1,7 @@
 package eda095.project.server.lobby.commands;
 
 import eda095.project.server.lobby.Lobby;
-import eda095.project.server.lobby.messages.Message;
-import eda095.project.server.lobby.messages.ServerMessage;
+import eda095.project.server.lobby.messages.*;
 import eda095.project.server.lobby.LobbyClientState;
 import eda095.project.server.lobby.LobbyConnection;
 
@@ -23,7 +22,10 @@ public class CommandParser {
         patterns = new ArrayList<>();
         functionTable = new HashMap<>();
         DEFAULT_COMMAND_CHAT_MESSAGE = new CommandKeyValueEntry("default", ".*", (lobbyMessage, ckve) -> {
-            lobby.broadcastMessage(lobbyMessage);
+        //    lobby.broadcastMessage(lobbyMessage);
+            LobbyConnection connection = lobbyMessage.getConnection();
+            LobbyClientState state = connection.getState();
+            lobby.broadcastMessage(new BroadcastMessage(state.username, "general", lobbyMessage.toString()));
         });
         setupParsers(lobby);
     }
@@ -51,6 +53,17 @@ public class CommandParser {
                     connection.outputMessages(lobby.showUsers());
                     lobby.broadcastMessage(new ServerMessage(username + " has joined the club."));
                 }
+            }
+        });
+        addParser("whisper", "\\/whisper (?<recipient>\\w+) (?<message>.*)", (message, ckve) -> {
+            synchronized (this) {
+                Matcher matcher  = ckve.pattern.matcher(message.getMessage());
+                boolean matches  = matcher.matches();
+                String recipient = matcher.group("recipient");
+                String cMessage   = matcher.group("message");
+                LobbyConnection connection = message.getConnection();
+                LobbyClientState state = connection.getState();
+                lobby.whisperMessage(new Whisper(state.username, recipient, cMessage));
             }
         });
     }
