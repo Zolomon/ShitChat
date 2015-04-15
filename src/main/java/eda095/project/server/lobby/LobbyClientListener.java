@@ -14,6 +14,7 @@ public class LobbyClientListener extends Thread {
     private ServerSocket server;
     private ConcurrentLinkedDeque<LobbyConnection> connections;
     private boolean isRunning = true;
+    private int nrUsers = 0;
 
     public LobbyClientListener(Lobby lobby, int port) {
         connections = new ConcurrentLinkedDeque<>();
@@ -33,10 +34,9 @@ public class LobbyClientListener extends Thread {
         while (isRunning) {
             try {
                 Socket socket = server.accept();
-
+                ++nrUsers;
                 System.out.println("[" + socket.getInetAddress().toString() + " connected]");
-
-                LobbyConnection connection = new LobbyConnection(socket, lobby);
+                LobbyConnection connection = new LobbyConnection(socket, lobby, "anon"+nrUsers);
                 connections.add(connection);
                 connection.start();
             } catch (IOException e) {

@@ -8,7 +8,8 @@ public class LobbyClientState {
     public String username;
     private boolean isRunning;
 
-    public LobbyClientState() {
+    public LobbyClientState(String username) {
+        this.username = username;
     }
 
     public synchronized boolean isRunning() {

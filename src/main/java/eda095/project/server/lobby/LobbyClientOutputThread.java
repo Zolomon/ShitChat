@@ -4,6 +4,8 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.concurrent.LinkedBlockingDeque;
 
+import eda095.project.server.lobby.messages.*;
+
 /**
  * Created by zol on 3/31/2015.
  *
@@ -13,9 +15,9 @@ public class LobbyClientOutputThread extends Thread {
 
     private final PrintWriter writer;
     private LobbyConnection connection;
-    private LinkedBlockingDeque<LobbyMessage> outputMessageQueue;
+    private LinkedBlockingDeque<Message> outputMessageQueue;
 
-    public LobbyClientOutputThread(LobbyConnection connection, OutputStream outputStream, LinkedBlockingDeque<LobbyMessage> outputMessageQueue) {
+    public LobbyClientOutputThread(LobbyConnection connection, OutputStream outputStream, LinkedBlockingDeque<Message> outputMessageQueue) {
         this.connection = connection;
         this.outputMessageQueue = outputMessageQueue;
         this.writer = new PrintWriter(outputStream);
@@ -24,7 +26,7 @@ public class LobbyClientOutputThread extends Thread {
     @Override
     public void run() {
         while (connection.getState().isRunning()) {
-            LobbyMessage msg;
+            Message msg;
             try {
                 msg = outputMessageQueue.takeFirst();
             } catch (InterruptedException e) {

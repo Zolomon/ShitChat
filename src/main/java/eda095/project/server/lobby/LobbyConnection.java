@@ -1,5 +1,7 @@
 package eda095.project.server.lobby;
 
+import eda095.project.server.lobby.messages.*;
+
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -15,17 +17,17 @@ public class LobbyConnection {
     private LobbyClientState state;
     private LobbyClientInputThread inputThread;
     private LobbyClientOutputThread outputThread;
-    private LinkedBlockingDeque<LobbyMessage> outputMessageQueue;
+    private LinkedBlockingDeque<Message> outputMessageQueue;
 
-    public LobbyConnection(Socket socket, Lobby lobby) {
+    public LobbyConnection(Socket socket, Lobby lobby, String username) {
         this.socket = socket;
         this.lobby = lobby;
         this.outputMessageQueue = new LinkedBlockingDeque<>();
-        state = new LobbyClientState();
+        state = new LobbyClientState(username);
 
         // TODO(zol): Figure out a nice way to handle states, EX: finite state machine
-        this.outputMessageQueue.addLast(new LobbyMessage("Lobby", "Welcome!"));
-        this.outputMessageQueue.addLast(new LobbyMessage("Lobby", "Please enter your username"));
+        this.outputMessageQueue.addLast(new ServerMessage("Welcome!"));
+        this.outputMessageQueue.addLast(new ServerMessage("Please enter your username"));
 
         createInputThread(socket);
         createOutputThread(socket);
@@ -77,17 +79,17 @@ public class LobbyConnection {
         System.out.printf("Client connection stopped.");
     }
 
-    public void sendInput(LobbyMessage message) {
+    public void sendInput(Message message) {
         message.setConnection(this);
         lobby.input(message);
     }
 
-    public void outputMessage(LobbyMessage message) {
+    public void outputMessage(Message message) {
         outputMessageQueue.addLast(message);
     }
 
-    public void outputMessages(ArrayList<LobbyMessage> lobbyMessages) {
-        for(LobbyMessage m : lobbyMessages) {
+    public void outputMessages(ArrayList<Message> messages) {
+        for(Message m : messages) {
             outputMessage(m);
         }
     }

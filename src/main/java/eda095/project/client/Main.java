@@ -15,10 +15,10 @@ public class Main {
             ot.start();
             cw.show();
             mb.waitForConnectionToTerminate();
-            System.out.println("Connection terminated.");
+            ot.interrupt();
             s.close();
+            System.out.println("Connection terminated.");
             cw.destroy();
-            //System.exit(0);
         } catch (UnknownHostException e) {
             System.err.println("Couldn't find host, exiting.");
             System.exit(1);
