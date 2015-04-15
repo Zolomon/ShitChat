@@ -65,3 +65,10 @@ crashlytics-build.properties
 target/
 
 *.swp
+
+# gradle
+.gradle
+build
+
+# SQLite database
+server.db

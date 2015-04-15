@@ -1,6 +1,9 @@
 package eda095.project.server.lobby;
 
 import eda095.project.server.lobby.commands.CommandParser;
+import eda095.project.server.lobby.database.DatabaseStore;
+import eda095.project.shared.Account;
+import eda095.project.shared.Profile;
 
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentLinkedDeque;
@@ -10,10 +13,11 @@ import java.util.concurrent.LinkedBlockingDeque;
  * Created by 23060835 on 3/31/15.
  */
 public class Lobby {
-    private LobbyClientListener listener;
+    private final DatabaseStore database;
+    private final LobbyClientListener listener;
     private ConcurrentLinkedDeque<LobbyConnection> connections;
-    private LinkedBlockingDeque<LobbyMessage> clientMessages;
-    private CommandParser commandParser;
+    private final LinkedBlockingDeque<LobbyMessage> clientMessages;
+    private final CommandParser commandParser;
 
     /**
      * Start the lobby listening on the specified {@code port}.
@@ -21,6 +25,7 @@ public class Lobby {
      * @param port The port to listen on
      */
     public Lobby(int port) {
+        database = DatabaseStore.getInstance();
         listener = new LobbyClientListener(this, port);
         clientMessages = new LinkedBlockingDeque<>();
         commandParser = new CommandParser(this);
@@ -30,13 +35,15 @@ public class Lobby {
      * Start the listener thread
      */
     public void start() {
+        database.load();
+        
         listener.start();
         LobbyMessage message;
-        while(true) {
+        while (true) {
             System.out.println("[Waiting for a message...]");
             try {
                 message = clientMessages.take();
-                System.out.println("[Received '"+message.toString()+"']" );
+                System.out.println("[Received '" + message.toString() + "']");
             } catch (InterruptedException e) {
                 e.printStackTrace();
                 break;
@@ -44,6 +51,8 @@ public class Lobby {
             CommandParser.CommandKeyValueEntry callback = commandParser.parseMessage(message);
             callback.callback.accept(message, callback);
         }
+
+        database.close();
     }
 
     public ConcurrentLinkedDeque<LobbyConnection> getConnections() {
@@ -69,7 +78,7 @@ public class Lobby {
     /**
      * Send an input message to the lobby for verification
      * and processing.
-     * <p>
+     * <p/>
      * The message will be verified and then the state will be modified
      * according to the input.
      *
