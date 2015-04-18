@@ -1,5 +1,7 @@
 package eda095.project.server.lobby;
-import eda095.project.server.lobby.messages.*;
+
+import eda095.project.server.messages.ClientLobbyMessage;
+import eda095.project.server.messages.LobbyMessage;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -34,8 +36,8 @@ public class LobbyClientInputThread extends Thread {
                     reader.close();
                     return;
                 }
-                Message message;
-                message = new Message(line);
+                LobbyMessage message;
+                message = new ClientLobbyMessage(line);
                 connection.sendInput(message);
             } catch (IOException e) {
                 System.out.println("IOException: " + e.getMessage());

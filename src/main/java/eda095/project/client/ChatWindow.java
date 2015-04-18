@@ -41,7 +41,7 @@ public class ChatWindow {
      * a given title which is displayed in the title bar of the window. Note
      * that the window is initially invisible. You must call the
      * <code>show</code> method in order to display the window.
-     * 
+     *
      *
      * @param x      the x coordinate of the position of the window
      * @param y      the y coordinate of the position of the window
@@ -115,7 +115,7 @@ public class ChatWindow {
      */
     public void hide() {
         if (!destroyed) {
-            theWindow.setVisible(false);    
+            theWindow.setVisible(false);
         }
     }
 

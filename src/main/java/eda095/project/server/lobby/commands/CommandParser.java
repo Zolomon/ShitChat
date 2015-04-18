@@ -1,9 +1,14 @@
 package eda095.project.server.lobby.commands;
 
 import eda095.project.server.lobby.Lobby;
-import eda095.project.server.lobby.messages.*;
 import eda095.project.server.lobby.LobbyClientState;
 import eda095.project.server.lobby.LobbyConnection;
+import eda095.project.server.messages.ChatLobbyMessage;
+import eda095.project.server.messages.LobbyMessage;
+import eda095.project.server.messages.ServerLobbyMessage;
+import eda095.project.server.messages.WhisperLobbyMessage;
+import eda095.project.server.messages.decorators.BroadcastDecorator;
+import eda095.project.server.messages.decorators.SequentialListDecorator;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,20 +17,19 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class CommandParser {
-    private final Lobby lobby;
-    private HashMap<String, BiConsumer<Message, CommandKeyValueEntry>> functionTable;
-    private ArrayList<CommandKeyValueEntry> patterns;
     private static CommandKeyValueEntry DEFAULT_COMMAND_CHAT_MESSAGE;
+    private final Lobby lobby;
+    private HashMap<String, BiConsumer<LobbyMessage, CommandKeyValueEntry>> functionTable;
+    private ArrayList<CommandKeyValueEntry> patterns;
 
     public CommandParser(Lobby lobby) {
         this.lobby = lobby;
         patterns = new ArrayList<>();
         functionTable = new HashMap<>();
         DEFAULT_COMMAND_CHAT_MESSAGE = new CommandKeyValueEntry("default", ".*", (lobbyMessage, ckve) -> {
-        //    lobby.broadcastMessage(lobbyMessage);
             LobbyConnection connection = lobbyMessage.getConnection();
             LobbyClientState state = connection.getState();
-            lobby.broadcastMessage(new BroadcastMessage(state.username, "general", lobbyMessage.toString()));
+            lobby.processMessage(lobbyMessage, new BroadcastDecorator(new ChatLobbyMessage(state.getUsername(), "general", lobbyMessage.toString())));
         });
         setupParsers(lobby);
     }
@@ -37,8 +41,10 @@ public class CommandParser {
                 lobby.removeConnection(message.getConnection());
             }
         });
+
         addParser("login", "\\/login (?<username>.*)", (message, ckve) -> {
             synchronized (this) {
+                System.out.println("login");
                 Matcher matcher = ckve.pattern.matcher(message.getMessage());
                 boolean matches = matcher.matches();
                 String username = matcher.group("username");
@@ -46,34 +52,35 @@ public class CommandParser {
                 if (authenticated) {
                     LobbyConnection connection = message.getConnection();
                     LobbyClientState state = connection.getState();
-                    state.username = username;
-                    state.isLoggedIn = true;
-                    connection.outputMessage(new ServerMessage("You logged in successfully"));
-                    connection.outputMessage(new ServerMessage("Currently logged in users: "));
-                    connection.outputMessages(lobby.showUsers());
-                    lobby.broadcastMessage(new ServerMessage(username + " has joined the club."));
+                    state.setUsername(username);
+                    state.setIsLoggedIn(true);
+                    lobby.processMessage(message, new ServerLobbyMessage("You logged in successfully"));
+                    lobby.processMessage(message, new ServerLobbyMessage("Currently logged in users: "));
+                    lobby.processMessage(message, new SequentialListDecorator(lobby.showUsers()));
+                    lobby.processMessage(message, new BroadcastDecorator(new ServerLobbyMessage(username + " has joined the club.")));
                 }
             }
         });
+
         addParser("whisper", "\\/whisper (?<recipient>\\w+) (?<message>.*)", (message, ckve) -> {
             synchronized (this) {
-                Matcher matcher  = ckve.pattern.matcher(message.getMessage());
-                boolean matches  = matcher.matches();
+                Matcher matcher = ckve.pattern.matcher(message.getMessage());
+                boolean matches = matcher.matches();
                 String recipient = matcher.group("recipient");
-                String cMessage   = matcher.group("message");
+                String cMessage = matcher.group("message");
                 LobbyConnection connection = message.getConnection();
                 LobbyClientState state = connection.getState();
-                lobby.whisperMessage(new Whisper(state.username, recipient, cMessage));
+                lobby.processMessage(message, new WhisperLobbyMessage(state.getUsername(), recipient, cMessage));
             }
         });
     }
 
-    private void addParser(String name, String regex, BiConsumer<Message, CommandKeyValueEntry> callback) {
+    private void addParser(String name, String regex, BiConsumer<LobbyMessage, CommandKeyValueEntry> callback) {
         patterns.add(new CommandKeyValueEntry(name, regex, callback));
         functionTable.put(name, callback);
     }
 
-    public CommandKeyValueEntry parseMessage(Message message) {
+    public CommandKeyValueEntry parseMessage(LobbyMessage message) {
         for (CommandKeyValueEntry ckve : patterns) {
             if (ckve.pattern.matcher(message.getMessage()).matches()) {
                 System.out.println("[Message parsed as: " + ckve.key + "]");
@@ -87,9 +94,9 @@ public class CommandParser {
     public class CommandKeyValueEntry {
         public String key;
         public Pattern pattern;
-        public BiConsumer<Message, CommandKeyValueEntry> callback;
+        public BiConsumer<LobbyMessage, CommandKeyValueEntry> callback;
 
-        public CommandKeyValueEntry(String key, String regex, BiConsumer<Message, CommandKeyValueEntry> callback) {
+        public CommandKeyValueEntry(String key, String regex, BiConsumer<LobbyMessage, CommandKeyValueEntry> callback) {
             this.key = key;
             this.pattern = Pattern.compile(regex);
             this.callback = callback;

@@ -36,7 +36,7 @@ public class LobbyClientListener extends Thread {
                 Socket socket = server.accept();
                 ++nrUsers;
                 System.out.println("[" + socket.getInetAddress().toString() + " connected]");
-                LobbyConnection connection = new LobbyConnection(socket, lobby, "anon"+nrUsers);
+                LobbyConnection connection = new LobbyConnection(socket, lobby, "anon" + nrUsers);
                 connections.add(connection);
                 connection.start();
             } catch (IOException e) {

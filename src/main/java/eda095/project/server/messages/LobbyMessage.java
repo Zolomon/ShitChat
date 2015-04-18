@@ -1,24 +1,32 @@
-package eda095.project.server.lobby.messages;
+package eda095.project.server.messages;
 
+import eda095.project.server.lobby.Lobby;
 import eda095.project.server.lobby.LobbyConnection;
 
-public class Message {
+public abstract class LobbyMessage {
     protected String message;
 
     private LobbyConnection connection;
 
-    public Message(String message) {
+    protected LobbyMessage() {
+
+    }
+
+    public LobbyMessage(String message) {
         this.message = message;
     }
 
-    public String getMessage() { 
+    public String getMessage() {
         return message;
     }
+
     public String messageToString() {
         return message;
     }
+
+    @Override
     public String toString() {
-        return messageToString(); 
+        return messageToString();
     }
 
     public LobbyConnection getConnection() {
@@ -28,4 +36,6 @@ public class Message {
     public void setConnection(LobbyConnection connection) {
         this.connection = connection;
     }
+
+    public abstract void process(Lobby lobby);
 }

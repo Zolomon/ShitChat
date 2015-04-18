@@ -1,10 +1,10 @@
 package eda095.project.server.lobby;
 
-import eda095.project.server.lobby.messages.*;
+import eda095.project.server.messages.LobbyMessage;
+import eda095.project.server.messages.ServerLobbyMessage;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.concurrent.LinkedBlockingDeque;
 
 /**
@@ -13,11 +13,10 @@ import java.util.concurrent.LinkedBlockingDeque;
 public class LobbyConnection {
     private final Socket socket;
     private Lobby lobby;
-    private String username;
     private LobbyClientState state;
     private LobbyClientInputThread inputThread;
     private LobbyClientOutputThread outputThread;
-    private LinkedBlockingDeque<Message> outputMessageQueue;
+    private LinkedBlockingDeque<LobbyMessage> outputMessageQueue;
 
     public LobbyConnection(Socket socket, Lobby lobby, String username) {
         this.socket = socket;
@@ -26,8 +25,8 @@ public class LobbyConnection {
         state = new LobbyClientState(username);
 
         // TODO(zol): Figure out a nice way to handle states, EX: finite state machine
-        this.outputMessageQueue.addLast(new ServerMessage("Welcome!"));
-        this.outputMessageQueue.addLast(new ServerMessage("Please enter your username"));
+        this.outputMessageQueue.addLast(new ServerLobbyMessage("Welcome!"));
+        this.outputMessageQueue.addLast(new ServerLobbyMessage("Please enter your username"));
 
         createInputThread(socket);
         createOutputThread(socket);
@@ -55,10 +54,6 @@ public class LobbyConnection {
         }
     }
 
-    public String getUsername() {
-        return username;
-    }
-
     public void start() {
         state.setRunning(true);
         inputThread.start();
@@ -69,7 +64,7 @@ public class LobbyConnection {
     // How can we be sure that input and output threads terminate?
     public void stop() {
         state.setRunning(false);
-        state.isLoggedIn = false;
+        state.setIsLoggedIn(false);
         try {
             socket.close();
         } catch (IOException e) {
@@ -79,18 +74,12 @@ public class LobbyConnection {
         System.out.printf("Client connection stopped.");
     }
 
-    public void sendInput(Message message) {
+    public void sendInput(LobbyMessage message) {
         message.setConnection(this);
         lobby.input(message);
     }
 
-    public void outputMessage(Message message) {
+    public void outputMessage(LobbyMessage message) {
         outputMessageQueue.addLast(message);
-    }
-
-    public void outputMessages(ArrayList<Message> messages) {
-        for(Message m : messages) {
-            outputMessage(m);
-        }
     }
 }

@@ -12,17 +12,17 @@ public class MessageBox {
         incoming = new ArrayList<String>();
         terminatedConnection = false;
     }
-    
+
     public void setConnectionTerminated(boolean t) {
         synchronized (this) {
-            terminatedConnection = t; 
+            terminatedConnection = t;
             notifyAll();
         }
     }
 
     public void waitForConnectionToTerminate() {
         synchronized (this) {
-            while (!terminatedConnection) 
+            while (!terminatedConnection)
                 try {
                     wait();
                 } catch (InterruptedException e) {

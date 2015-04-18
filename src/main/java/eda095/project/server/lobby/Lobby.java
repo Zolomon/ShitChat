@@ -2,20 +2,20 @@ package eda095.project.server.lobby;
 
 import eda095.project.server.lobby.commands.CommandParser;
 import eda095.project.server.lobby.database.DatabaseStore;
-import eda095.project.server.lobby.messages.Message;
-import eda095.project.server.lobby.messages.ServerMessage;
-import eda095.project.server.lobby.messages.Whisper;
+import eda095.project.server.messages.LobbyMessage;
+import eda095.project.server.messages.ServerLobbyMessage;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.LinkedBlockingDeque;
 
 public class Lobby {
     private final DatabaseStore database;
     private final LobbyClientListener listener;
-    private ConcurrentLinkedDeque<LobbyConnection> connections;
-    private final LinkedBlockingDeque<Message> clientMessages;
+    private final LinkedBlockingDeque<LobbyMessage> clientMessages;
     private final CommandParser commandParser;
+    private ConcurrentLinkedDeque<LobbyConnection> connections;
 
     public Lobby(int port) {
         database = DatabaseStore.getInstance();
@@ -26,14 +26,14 @@ public class Lobby {
 
     public void start() {
         database.load();
-        
+
         listener.start();
-        Message message;
-        while(true) {
+        LobbyMessage message;
+        while (true) {
             System.out.println("[Waiting for a message...]");
             try {
                 message = clientMessages.take();
-                System.out.println("[Received '"+message+"']" );
+                System.out.println("[Received '" + message + "']");
             } catch (InterruptedException e) {
                 e.printStackTrace();
                 break;
@@ -53,22 +53,12 @@ public class Lobby {
         this.connections = connections;
     }
 
-    public void broadcastMessage(Message message) {
-        System.out.println("Broadcasting message: " + message);
-        for (LobbyConnection con : connections) {
-            con.outputMessage(message);
-        }
+    public void processMessage(LobbyMessage originalLobbyMessage, LobbyMessage message) {
+        message.setConnection(originalLobbyMessage.getConnection());
+        message.process(this);
     }
 
-    public void whisperMessage(Whisper message) {
-        System.out.println("whispering: " + message);
-        for (LobbyConnection con : connections) {
-            if (message.isAuthorOrRecipient(con.getState().username))
-                con.outputMessage(message);
-        }
-    }
-
-    public void input(Message message) {
+    public void input(LobbyMessage message) {
         clientMessages.offer(message);
     }
 
@@ -76,7 +66,7 @@ public class Lobby {
         connections.remove(connection);
     }
 
-    public boolean authenticate(Message message) {
+    public boolean authenticate(LobbyMessage message) {
         // TODO(zol): Let's properly handle authentication. :)
         if (message.getMessage().contains("zol") ||
                 message.getMessage().contains("3amice") ||
@@ -87,12 +77,11 @@ public class Lobby {
         return false;
     }
 
-    public ArrayList<Message> showUsers() {
-        // TODO(zol): We probably need to pool objects so that we don't hit GC too much.
-        ArrayList<Message> messages = new ArrayList<>();
+    public List<LobbyMessage> showUsers() {
+        ArrayList<LobbyMessage> messages = new ArrayList<>();
         synchronized (connections) {
             for (LobbyConnection con : connections) {
-                messages.add(new ServerMessage(con.getState().username));
+                messages.add(new ServerLobbyMessage(con.getState().getUsername()));
             }
         }
         return messages;

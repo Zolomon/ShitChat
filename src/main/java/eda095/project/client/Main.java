@@ -1,13 +1,14 @@
 package eda095.project.client;
 
-import java.net.*;
-import java.io.*;
+import java.io.IOException;
+import java.net.Socket;
+import java.net.UnknownHostException;
 
 public class Main {
     public static void main(String[] args) {
         MessageBox mb = new MessageBox();
         try {
-            Socket s = new Socket("localhost", 8081);
+            Socket s = new Socket("localhost", 8888);
             ChatWindow cw = new ChatWindow(400, 300, "ShitChat", mb);
             InputThread it = new InputThread(mb, cw, s.getInputStream());
             OutputThread ot = new OutputThread(s, mb);
