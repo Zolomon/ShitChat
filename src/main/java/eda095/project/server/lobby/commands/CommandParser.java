@@ -77,9 +77,9 @@ public class CommandParser {
                 matcher.matches();
                 String channel = matcher.group("channel");
                 if (message.getConnection().getState().addChannel(channel)) {
-                    lobby.processMessage(message, new BroadcastDecorator(
+                    lobby.processMessage(message,
                             new ChatLobbyMessage("server", channel,
-                                    message.getConnection().getState().getUsername()+ " has joined " + channel + ".")));
+                                    message.getConnection().getState().getUsername()+ " has joined " + channel + "."));
                 } else {
                     lobby.processMessage(message, new ServerLobbyMessage("You are already a member of " + channel + "."));
                 }
@@ -96,8 +96,8 @@ public class CommandParser {
                 } else if (message.getConnection().getState().removeChannel(channel)) {
                     lobby.processMessage(message, new ServerLobbyMessage("Left channel " + channel + "."));
                     String username = message.getConnection().getState().getUsername();
-                    lobby.processMessage(message, new BroadcastDecorator(
-                            new ChatLobbyMessage("server", channel, username + " has left " + channel + ".")));
+                    lobby.processMessage(message,
+                            new ChatLobbyMessage("server", channel, username + " has left " + channel + "."));
                 } else {
                     lobby.processMessage(message, new ServerLobbyMessage("You are not a member of " + channel + "."));
                 }
