@@ -72,3 +72,7 @@ build
 
 # SQLite database
 server.db
+
+.DS_Store
+.project
+.settings/

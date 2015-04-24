@@ -35,6 +35,10 @@ public class ChatWindow {
     private boolean       destroyed;
     private SubmitThread  submitter;
     private MessageBox    mb;
+    // buddy list
+    private List             buddyList;
+    private ListHandler      listHandler;
+    private SelectionHandler selector;
 
     /**
      * Constructs a ChatWindow at a given position on the screen and with
@@ -61,6 +65,11 @@ public class ChatWindow {
         theMessages.setEditable(false);
         theMessages.setBackground(SystemColor.text);
         theWindow.add("Center",theMessages);
+
+        buddyList = new List(10,false);
+        listHandler = new ListHandler();
+        buddyList.addItemListener(listHandler);
+        theWindow.add("West",buddyList);
 
         inputPanel = new Panel();
         theWindow.add("South",inputPanel);
@@ -188,4 +197,84 @@ public class ChatWindow {
         }
     }
 
+    /** BUDDY LIST FUNCTIONS */
+
+    /**
+     * Adds a new element to the end of the list presented in the ListWindow.
+     *
+     * @param element  a string containing the text which is to be displayed
+     *                 in the ListWindow
+     */
+    public void addBuddy(String element) {
+        if (!destroyed) {
+            buddyList.add(element);
+        }
+    }
+
+    /**
+     * Clears the contents of the ListWindow and removes all elements
+     * in the list.
+     */
+    public void clearBuddys() {
+        if (!destroyed) {
+            buddyList.removeAll();
+        }
+    }
+    /**
+     * Returns the index of the currently selected item, if any, in the
+     * list. The first item is numbered 0.
+     *
+     * @return the index of the selected item. If no item is selected
+    the method returns -1.
+     */
+    public int getSelectedPosition() {
+        int result;
+
+        if (!destroyed) {
+            result = buddyList.getSelectedIndex();
+        } else {
+            result = -1;
+        }
+        return result;
+    }
+
+    /**
+     * The <code>elementSelected</code> method is called whenever the user
+     * selects an element in the ListWindow.
+     * The intention is that this method should be overloaded in a
+     * subclass to ListWindow. The default implementation found in the
+     * ListWindow class does nothing.
+     *
+     * @param buddy   a String containing the text of the selected element
+     * @param position  the index of the selected element
+     */
+    public void elementSelected(String buddy,int position) {
+        // prepare "/whisper buddy " for user
+        inputField.setText("/whisper " + buddy + " ");
+        inputField.requestFocusInWindow();
+    }
+
+    private class ListHandler implements ItemListener {
+        public void itemStateChanged(ItemEvent e) {
+            if (selector==null || !selector.isAlive()) {
+                selector = new SelectionHandler(buddyList.getSelectedItem(),
+                        buddyList.getSelectedIndex());
+                selector.start();
+            }
+        }
+    }
+
+    private class SelectionHandler extends Thread {
+        private String item;
+        private int pos;
+
+        public SelectionHandler(String item,int pos) {
+            this.item = item;
+            this.pos = pos;
+        }
+
+        public void run() {
+            elementSelected(item, pos);
+        }
+    }
 }
