@@ -39,6 +39,9 @@ public class CommandParser {
     private void setupParsers(Lobby lobby) {
         addParser("quit", "\\/quit", (message, ckve) -> {
             synchronized (this) {
+                lobby.processMessage(message,
+                        new BroadcastDecorator(
+                                new ServerLobbyMessage(message.getConnection().getState().getUsername() + " has perished.")));
                 message.getConnection().stop();
             }
         });
@@ -46,20 +49,74 @@ public class CommandParser {
         addParser("login", "\\/login (?<username>.*)", (message, ckve) -> {
             synchronized (this) {
                 Matcher matcher = ckve.pattern.matcher(message.getMessage());
+                matcher.matches();
                 String username = matcher.group("username");
-                lobby.authenticate(message, username);
+                if (!username.toLowerCase().equals("server")) {
+                    lobby.authenticate(message, username);
+                } else {
+                    lobby.processMessage(message, new ServerLobbyMessage("Sorry, you can't name yourself that."));
+                }
             }
         });
 
         addParser("whisper", "\\/whisper (?<recipient>\\w+) (?<message>.*)", (message, ckve) -> {
             synchronized (this) {
                 Matcher matcher = ckve.pattern.matcher(message.getMessage());
-                boolean matches = matcher.matches();
+                matcher.matches();
                 String recipient = matcher.group("recipient");
                 String cMessage = matcher.group("message");
                 LobbyConnection connection = message.getConnection();
                 LobbyClientState state = connection.getState();
                 lobby.processMessage(message, new WhisperLobbyMessage(state.getUsername(), recipient, cMessage));
+            }
+        });
+
+        addParser("join", "\\/join (?<channel>\\w+)", (message, ckve) -> {
+            synchronized (this) {
+                Matcher matcher = ckve.pattern.matcher(message.getMessage());
+                matcher.matches();
+                String channel = matcher.group("channel");
+                if (message.getConnection().getState().addChannel(channel)) {
+                    lobby.processMessage(message, new BroadcastDecorator(
+                            new ChatLobbyMessage("server", channel,
+                                    message.getConnection().getState().getUsername()+ " has joined " + channel + ".")));
+                } else {
+                    lobby.processMessage(message, new ServerLobbyMessage("You are already a member of " + channel + "."));
+                }
+            }
+        });
+
+        addParser("leave", "\\/leave (?<channel>\\w+)", (message, ckve) -> {
+            synchronized (this) {
+                Matcher matcher = ckve.pattern.matcher(message.getMessage());
+                matcher.matches();
+                String channel = matcher.group("channel");
+                if (channel.equals("general")) {
+                    lobby.processMessage(message, new ServerLobbyMessage("Participation in the general channel is obligatory."));
+                } else if (message.getConnection().getState().removeChannel(channel)) {
+                    lobby.processMessage(message, new ServerLobbyMessage("Left channel " + channel + "."));
+                    String username = message.getConnection().getState().getUsername();
+                    lobby.processMessage(message, new BroadcastDecorator(
+                            new ChatLobbyMessage("server", channel, username + " has left " + channel + ".")));
+                } else {
+                    lobby.processMessage(message, new ServerLobbyMessage("You are not a member of " + channel + "."));
+                }
+            }
+        });
+
+        addParser("channelMessage", "\\/msg (?<channel>\\w+) (?<message>.*)", (message, ckve) -> {
+            synchronized (this) {
+                Matcher matcher = ckve.pattern.matcher(message.getMessage());
+                matcher.matches();
+                String channel = matcher.group("channel");
+                String cMessage = matcher.group("message");
+                String username = message.getConnection().getState().getUsername();
+                if (message.getConnection().getState().getChannels().contains(channel)) {
+                    lobby.processMessage(message, new ChatLobbyMessage(username, channel, cMessage));
+                } else {
+                    lobby.processMessage(message,
+                            new ServerLobbyMessage("Message not sent, you are not a member of " + channel + "."));
+                }
             }
         });
     }

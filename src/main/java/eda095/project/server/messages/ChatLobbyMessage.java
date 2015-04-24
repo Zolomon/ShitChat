@@ -1,6 +1,7 @@
 package eda095.project.server.messages;
 
 import eda095.project.server.lobby.Lobby;
+import eda095.project.server.lobby.LobbyConnection;
 
 /**
  * Created by zol on 4/17/2015.
@@ -17,7 +18,9 @@ public class ChatLobbyMessage extends LobbyMessage {
 
     @Override
     public void process(Lobby lobby) {
-        getConnection().outputMessage(this);
+        for (LobbyConnection conn : lobby.getConnections())
+            if (conn.getState().getChannels().contains(channel))
+                conn.outputMessage(this);
     }
 
     public String getUsername() {

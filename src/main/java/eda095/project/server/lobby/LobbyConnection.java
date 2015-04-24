@@ -64,7 +64,6 @@ public class LobbyConnection {
     // How can we be sure that input and output threads terminate?
     public void stop() {
         state.setRunning(false);
-        state.setIsLoggedIn(false);
         try {
             socket.close();
         } catch (IOException e) {

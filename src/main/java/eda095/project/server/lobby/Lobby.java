@@ -83,7 +83,6 @@ public class Lobby {
         if (acc != null) {
             if (isLoggedIn(username)) {
                 state.setUsername(username);
-                state.setIsLoggedIn(true);
                 processMessage(message, new ServerLobbyMessage("You logged in successfully."));
                 processMessage(message, new BroadcastDecorator(new ServerLobbyMessage(username + " has joined the club.")));
             } else {
@@ -92,11 +91,10 @@ public class Lobby {
         } else {
             database.create(new Account(username));
             state.setUsername(username);
-            state.setIsLoggedIn(true);
             processMessage(message, new ServerLobbyMessage("Account created."));
             processMessage(message, new BroadcastDecorator(new ServerLobbyMessage(username + " has joined the club.")));
         }
-        processMessage(message, new SequentialListDecorator(showUsers()));
+        //processMessage(message, new SequentialListDecorator(showUsers()));
     }
 
     public List<LobbyMessage> showUsers() {
