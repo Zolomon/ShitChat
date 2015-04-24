@@ -34,6 +34,7 @@ public class LobbyClientInputThread extends Thread {
                 if (line == null) {
                     // Line is null when the user has disconnected
                     reader.close();
+                    connection.stop();
                     return;
                 }
                 LobbyMessage message;

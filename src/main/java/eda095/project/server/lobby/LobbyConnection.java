@@ -71,6 +71,7 @@ public class LobbyConnection {
             System.err.println("Failed stopping connection");
             e.printStackTrace();
         }
+        lobby.removeConnection(this);
         System.out.printf("Client connection stopped.");
     }
 

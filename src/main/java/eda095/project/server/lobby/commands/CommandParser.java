@@ -38,7 +38,6 @@ public class CommandParser {
         addParser("quit", "\\/quit", (message, ckve) -> {
             synchronized (this) {
                 message.getConnection().stop();
-                lobby.removeConnection(message.getConnection());
             }
         });
 
