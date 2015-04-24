@@ -3,12 +3,14 @@ package eda095.project.server.lobby.commands;
 import eda095.project.server.lobby.Lobby;
 import eda095.project.server.lobby.LobbyClientState;
 import eda095.project.server.lobby.LobbyConnection;
+import eda095.project.server.lobby.database.DatabaseStore;
 import eda095.project.server.messages.ChatLobbyMessage;
 import eda095.project.server.messages.LobbyMessage;
 import eda095.project.server.messages.ServerLobbyMessage;
 import eda095.project.server.messages.WhisperLobbyMessage;
 import eda095.project.server.messages.decorators.BroadcastDecorator;
 import eda095.project.server.messages.decorators.SequentialListDecorator;
+import eda095.project.shared.Account;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,21 +45,9 @@ public class CommandParser {
 
         addParser("login", "\\/login (?<username>.*)", (message, ckve) -> {
             synchronized (this) {
-                System.out.println("login");
                 Matcher matcher = ckve.pattern.matcher(message.getMessage());
-                boolean matches = matcher.matches();
                 String username = matcher.group("username");
-                boolean authenticated = lobby.authenticate(message);
-                if (authenticated) {
-                    LobbyConnection connection = message.getConnection();
-                    LobbyClientState state = connection.getState();
-                    state.setUsername(username);
-                    state.setIsLoggedIn(true);
-                    lobby.processMessage(message, new ServerLobbyMessage("You logged in successfully"));
-                    lobby.processMessage(message, new ServerLobbyMessage("Currently logged in users: "));
-                    lobby.processMessage(message, new SequentialListDecorator(lobby.showUsers()));
-                    lobby.processMessage(message, new BroadcastDecorator(new ServerLobbyMessage(username + " has joined the club.")));
-                }
+                lobby.authenticate(message, username);
             }
         });
 
