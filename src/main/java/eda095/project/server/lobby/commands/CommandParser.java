@@ -11,6 +11,7 @@ import eda095.project.server.messages.WhisperLobbyMessage;
 import eda095.project.server.messages.decorators.BroadcastDecorator;
 import eda095.project.server.messages.decorators.SequentialListDecorator;
 import eda095.project.shared.Account;
+import eda095.project.shared.Profile;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -116,6 +117,50 @@ public class CommandParser {
                 } else {
                     lobby.processMessage(message,
                             new ServerLobbyMessage("Message not sent, you are not a member of " + channel + "."));
+                }
+            }
+        });
+
+        addParser("finger", "\\/finger (?<username>\\w+)", (message, ckve) -> {
+            synchronized (this) {
+                Matcher matcher = ckve.pattern.matcher(message.getMessage());
+                matcher.matches();
+                String username = matcher.group("username");
+                LobbyClientState state = message.getConnection().getState();
+                Profile p = lobby.database.getProfile(username);
+                if (p != null) {
+                    lobby.processMessage(message, new ServerLobbyMessage("username: " + username +
+                        " title: " + p.getTitle() +
+                        " location: " + p.getLocation() +
+                        " avatar URI: " + p.getAvatar_uri()));
+                } else {
+                    lobby.processMessage(message, new ServerLobbyMessage("Profile for " + username + "does not exist."));
+                }
+            }
+        });
+
+        addParser("editProfile", "\\/editprofile (?<title>\\w+) (?<location>\\w+) (?<avatar>.+)", (message, ckve) -> {
+            synchronized (this) {
+                Matcher matcher = ckve.pattern.matcher(message.getMessage());
+                matcher.matches();
+                String title = matcher.group("title");
+                String location = matcher.group("location");
+                String avatar = matcher.group("avatar");
+                LobbyClientState state = message.getConnection().getState();
+                if (state.isLoggedIn()) {
+                    Profile p = lobby.database.getProfile(state.getUsername());
+                    if (p != null) {
+                        p.setTitle(title);
+                        p.setLocation(location);
+                        p.setAvatar_uri(avatar);
+                        int statuscode = lobby.database.update(p);
+                        lobby.processMessage(message, new ServerLobbyMessage("Profile was updated with statuscode: " + statuscode + "."));
+                    } else {
+                        lobby.database.create(new Profile(lobby.database.getAccount(state.getUsername()), title, location, avatar));
+                        lobby.processMessage(message, new ServerLobbyMessage("Profile was created."));
+                    }
+                } else {
+                    lobby.processMessage(message, new ServerLobbyMessage("Can't edit profile unless you're logged in."));
                 }
             }
         });

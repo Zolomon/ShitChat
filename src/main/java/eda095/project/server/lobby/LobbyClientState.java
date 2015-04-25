@@ -51,9 +51,7 @@ public class LobbyClientState {
         channels.remove(channel);
         return true;
     }
-}
 
-    /* why do these exist?
     public boolean isLoggedIn() {
         return isLoggedIn;
     }
@@ -61,4 +59,6 @@ public class LobbyClientState {
     public void setIsLoggedIn(boolean isLoggedIn) {
         this.isLoggedIn = isLoggedIn;
     }
-    */
+}
+
+

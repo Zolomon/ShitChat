@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.LinkedBlockingDeque;
 
 public class Lobby {
-    private final DatabaseStore database;
+    public final DatabaseStore database;
     private final LobbyClientListener listener;
     private final LinkedBlockingDeque<LobbyMessage> clientMessages;
     private final CommandParser commandParser;
@@ -83,14 +83,16 @@ public class Lobby {
         if (acc != null) {
             if (isLoggedIn(username)) {
                 state.setUsername(username);
+                state.setIsLoggedIn(true);
                 processMessage(message, new ServerLobbyMessage("You logged in successfully."));
-                processMessage(message, new BroadcastDecorator(new ServerLobbyMessage(username + " has joined the club.")));
+                processMessage(message, new BroadcastDecorator(new ServerLobbyMessage(username + " has logged in.")));
             } else {
                 processMessage(message, new ServerLobbyMessage("Failed logging in: Name already taken."));
             }
         } else {
             database.create(new Account(username));
             state.setUsername(username);
+            state.setIsLoggedIn(true);
             processMessage(message, new ServerLobbyMessage("Account created."));
             processMessage(message, new BroadcastDecorator(new ServerLobbyMessage(username + " has joined the club.")));
         }
