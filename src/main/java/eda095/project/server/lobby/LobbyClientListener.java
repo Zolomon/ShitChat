@@ -39,6 +39,8 @@ public class LobbyClientListener extends Thread {
                 LobbyConnection connection = new LobbyConnection(socket, lobby, "anon" + nrUsers);
                 connections.add(connection);
                 connection.start();
+                lobby.presentUsers(connection); //send buddylist to user
+                lobby.addUser("anon" + nrUsers); //update all buddylists
             } catch (IOException e) {
                 e.printStackTrace();
                 isRunning = false;
