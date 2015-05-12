@@ -211,6 +211,16 @@ public class ChatWindow {
         }
     }
 
+    public void removeBuddy(String name) {
+        if(!destroyed) {
+            try {
+                buddyList.remove(name);
+            }catch(IllegalArgumentException e){
+                //buddy does not exist in list
+            }
+        }
+    }
+
     /**
      * Clears the contents of the ListWindow and removes all elements
      * in the list.
@@ -220,6 +230,7 @@ public class ChatWindow {
             buddyList.removeAll();
         }
     }
+
     /**
      * Returns the index of the currently selected item, if any, in the
      * list. The first item is numbered 0.
@@ -250,8 +261,10 @@ public class ChatWindow {
      */
     public void elementSelected(String buddy,int position) {
         // prepare "/whisper buddy " for user
-        inputField.setText("/whisper " + buddy + " ");
-        inputField.requestFocusInWindow();
+        if(buddy != null) {
+            inputField.setText("/whisper " + buddy + " ");
+            inputField.requestFocusInWindow();
+        }
     }
 
     private class ListHandler implements ItemListener {

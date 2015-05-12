@@ -43,6 +43,7 @@ public class CommandParser {
                 lobby.processMessage(message,
                         new BroadcastDecorator(
                                 new ServerLobbyMessage(message.getConnection().getState().getUsername() + " has perished.")));
+                lobby.clearUser(message.getConnection().getState().getUsername()); //update all buddylists
                 message.getConnection().stop();
             }
         });
