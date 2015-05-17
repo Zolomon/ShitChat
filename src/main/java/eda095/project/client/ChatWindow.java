@@ -264,6 +264,7 @@ public class ChatWindow {
         if(buddy != null) {
             inputField.setText("/whisper " + buddy + " ");
             inputField.requestFocusInWindow();
+            buddyList.deselect(position);
         }
     }
 
