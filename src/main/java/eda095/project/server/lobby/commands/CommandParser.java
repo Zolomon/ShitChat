@@ -69,7 +69,19 @@ public class CommandParser {
                 String cMessage = matcher.group("message");
                 LobbyConnection connection = message.getConnection();
                 LobbyClientState state = connection.getState();
-                lobby.processMessage(message, new WhisperLobbyMessage(state.getUsername(), recipient, cMessage));
+                boolean exists = false;
+                for (LobbyConnection a : lobby.getConnections()) {
+                    exists |= a.getState().getUsername().equals(recipient);
+                    System.out.println(a.getState().getUsername());
+                    System.out.println(a.getState().getUsername() == recipient);
+                    System.out.println(exists);
+                }
+                if (exists) {
+                    lobby.processMessage(message, new WhisperLobbyMessage(state.getUsername(), recipient, cMessage));
+                } else {
+                    lobby.processMessage(message, new ServerLobbyMessage(
+                            String.format("Whisper failed: the user %s does not exist.", recipient)));
+                }
             }
         });
 
