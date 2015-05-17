@@ -29,13 +29,14 @@
       </header>
       <section>
         <h3>
-<a id="welcome-to-shitchat" class="anchor" href="#welcome-to-shitchat" aria-hidden="true"><span class="octicon octicon-link"></span></a>Welcome to ShitChat.</h3>
+<a id="welcome-to-shitchat-shit" class="anchor" href="#welcome-to-shitchat-shit" aria-hidden="true"><span class="octicon octicon-link"></span></a>Welcome to ShitChat <img class="emoji" title=":shit:" alt=":shit:" src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f4a9.png" height="20" width="20" align="absmiddle">
+</h3>
 
 <p><img src="https://raw.githubusercontent.com/Zolomon/ShitChat/master/images/shitchat.png" alt="ShitChat"></p>
 
 <p><strong>ShitChat</strong> is a cross-platform multithreaded multiuser client-server chat using functional style programming while adhering to the reactive manifesto to the best of its capabilities. *<strong><em>cough cough</em></strong>*</p>
 
-<p><strong>ShitChat</strong> was written by: <a href="https://github.com/HannaBjorgvins" class="user-mention">@HannaBjorgvins</a>, <a href="https://github.com/3amice" class="user-mention">@3amice</a>, <a href="https://github.com/RobinSeibold" class="user-mention">@RobinSeibold</a>, <a href="https://github.com/Zolomon" class="user-mention">@Zolomon</a>.</p>
+<p><strong>ShitChat</strong> was written by: <a href="https://github.com/HannaBjorgvins" class="user-mention">@HannaBjorgvins</a> <img class="emoji" title=":neckbeard:" alt=":neckbeard:" src="https://assets-cdn.github.com/images/icons/emoji/neckbeard.png" height="20" width="20" align="absmiddle">, <a href="https://github.com/3amice" class="user-mention">@3amice</a> <img class="emoji" title=":moneybag:" alt=":moneybag:" src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f4b0.png" height="20" width="20" align="absmiddle"><img class="emoji" title=":penguin:" alt=":penguin:" src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f427.png" height="20" width="20" align="absmiddle"><img class="emoji" title=":tophat:" alt=":tophat:" src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f3a9.png" height="20" width="20" align="absmiddle"><img class="emoji" title=":smiley_cat:" alt=":smiley_cat:" src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f63a.png" height="20" width="20" align="absmiddle">, <a href="https://github.com/RobinSeibold" class="user-mention">@RobinSeibold</a> :dolphine:<img class="emoji" title=":whale2:" alt=":whale2:" src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f40b.png" height="20" width="20" align="absmiddle"><img class="emoji" title=":camel:" alt=":camel:" src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f42b.png" height="20" width="20" align="absmiddle">, <a href="https://github.com/Zolomon" class="user-mention">@Zolomon</a> <img class="emoji" title=":coffee:" alt=":coffee:" src="https://assets-cdn.github.com/images/icons/emoji/unicode/2615.png" height="20" width="20" align="absmiddle"><img class="emoji" title=":feelsgood:" alt=":feelsgood:" src="https://assets-cdn.github.com/images/icons/emoji/feelsgood.png" height="20" width="20" align="absmiddle"><img class="emoji" title=":squirrel:" alt=":squirrel:" src="https://assets-cdn.github.com/images/icons/emoji/shipit.png" height="20" width="20" align="absmiddle"><img class="emoji" title=":doughnut:" alt=":doughnut:" src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f369.png" height="20" width="20" align="absmiddle">.</p>
 
 <h3>
 <a id="features" class="anchor" href="#features" aria-hidden="true"><span class="octicon octicon-link"></span></a>Features</h3>
@@ -52,32 +53,24 @@
 <h4>
 <a id="how-to-install" class="anchor" href="#how-to-install" aria-hidden="true"><span class="octicon octicon-link"></span></a>How to install?</h4>
 
-<pre><code>$ cd your_repo_root/repo_name
-$ git fetch origin
-$ git checkout gh-pages
+<pre><code>$ git clone https://github.com/Zolomon/ShitChat.git
+$ gradle uberjar_server # to build the server
+$ gradle uberjar_client # to build the client
+$ java -jar build/libs/server.jar 8888 # run server on port 8888
+$ java -jar build/libs/client.jar 192.168.0.150 8888 # connect client to server on 192.168.0.150 on port 8888.
 </code></pre>
 
-<p>If you're using the GitHub for Mac, simply sync your repository and you'll see the new branch.</p>
+<p>Start <img class="emoji" title=":shit:" alt=":shit:" src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f4a9.png" height="20" width="20" align="absmiddle"> chatting! </p>
 
 <h3>
-<a id="designer-templates" class="anchor" href="#designer-templates" aria-hidden="true"><span class="octicon octicon-link"></span></a>Designer Templates</h3>
+<a id="design" class="anchor" href="#design" aria-hidden="true"><span class="octicon octicon-link"></span></a>Design</h3>
 
-<p>We've crafted some handsome templates for you to use. Go ahead and continue to layouts to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved if it remained markdown format.</p>
-
-<h3>
-<a id="rather-drive-stick" class="anchor" href="#rather-drive-stick" aria-hidden="true"><span class="octicon octicon-link"></span></a>Rather Drive Stick?</h3>
-
-<p>If you prefer to not use the automatic generator, push a branch named <code>gh-pages</code> to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator written by our own Tom Preston-Werner. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.</p>
+<p><strong>ShitChat</strong> consists of two parts. One server, and one client. They communicate via a text-based protocol over TCP. Each connection is handled separately on its own thread, and full duplex communication is enabled due to two extra threads created to handle input and output respectively for each connection.</p>
 
 <h3>
-<a id="authors-and-contributors" class="anchor" href="#authors-and-contributors" aria-hidden="true"><span class="octicon octicon-link"></span></a>Authors and Contributors</h3>
+<a id="evaluation" class="anchor" href="#evaluation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Evaluation</h3>
 
-<p>You can <a href="https://github.com/blog/821" class="user-mention">@mention</a> a GitHub username to generate a link to their profile. The resulting <code>&lt;a&gt;</code> element will link to the contributor's GitHub Profile. For example: In 2007, Chris Wanstrath (<a href="https://github.com/defunkt" class="user-mention">@defunkt</a>), PJ Hyett (<a href="https://github.com/pjhyett" class="user-mention">@pjhyett</a>), and Tom Preston-Werner (<a href="https://github.com/mojombo" class="user-mention">@mojombo</a>) founded GitHub.</p>
-
-<h3>
-<a id="support-or-contact" class="anchor" href="#support-or-contact" aria-hidden="true"><span class="octicon octicon-link"></span></a>Support or Contact</h3>
-
-<p>Having trouble with Pages? Check out the documentation at <a href="https://help.github.com/pages">https://help.github.com/pages</a> or contact <a href="mailto:support@github.com">support@github.com</a> and we’ll help you sort it out.</p>
+<p>A list of potential features was created early on in the beginning of the project. Most of these features did not end up in the end product. Architecting the protocol was an interesting and fun task. The decision was made to use a text-based protocol over a binary protocol, or a third-party serialization library like Google's Protobufs.</p>
       </section>
       <footer>
         <p>This project is maintained by <a href="https://github.com/Zolomon">Zolomon</a></p>
