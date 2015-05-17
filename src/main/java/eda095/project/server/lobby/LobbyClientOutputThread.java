@@ -38,5 +38,6 @@ public class LobbyClientOutputThread extends Thread {
             writer.flush();
         }
         writer.close();
+        System.out.println("Exiting ClientOutputThread");
     }
 }

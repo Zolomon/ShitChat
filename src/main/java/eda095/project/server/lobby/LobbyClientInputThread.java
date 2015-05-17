@@ -42,6 +42,7 @@ public class LobbyClientInputThread extends Thread {
                 connection.sendInput(message);
             } catch (IOException e) {
                 System.out.println("IOException: " + e.getMessage());
+                System.out.println("Exiting ClientInputThread");
                 return;
             }
         }
