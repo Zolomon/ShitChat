@@ -27,15 +27,14 @@ public class Main {
             mb.waitForConnectionToTerminate();
             ot.interrupt();
             s.close();
-            System.out.println("Connection terminated.");
             cw.destroy();
         } catch (UnknownHostException e) {
-            System.err.println("Couldn't find host, exiting.");
+            AlertWindow.displayAlert(400, 300, "Error!", "Couldn't find host, exiting.");
             System.exit(1);
         } catch (IOException e) {
-            System.err.println("IOException when opening socket to host, exiting.");
+            AlertWindow.displayAlert(400, 300, "Error!", "Couldn't connect to host, exiting.");
             System.exit(1);
         }
-        System.out.println("Shutting down client.");
+        AlertWindow.displayAlert(300,400, "Alert", "Disconnected from server.");
     }
 }
