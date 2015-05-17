@@ -13,7 +13,7 @@ public class Main {
         } else {
             host = args[0];
             port = Integer.parseInt(args[1]);
-            System.out.printf("Connecting to %s:%d)\n", host, port);
+            System.out.printf("Connecting to %s:%d\n", host, port);
         }
         MessageBox mb = new MessageBox();
         try {
