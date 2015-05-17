@@ -66,7 +66,7 @@ public class CommandParser {
             }
         });
 
-        addParser("login", "\\/login (?<username>.*)", (message, ckve) -> {
+        addParser("login", "\\/login (?<username>\\w*)", (message, ckve) -> {
             synchronized (this) {
                 Matcher matcher = ckve.pattern.matcher(message.getMessage());
                 matcher.matches();
