@@ -25,3 +25,21 @@ dependencies {
     compile group: 'com.j256.ormlite', name: 'ormlite-jdbc', version: '4.48'
     testCompile group: 'junit', name: 'junit', version: '4.+'
 }
+
+task uberjar_server(dependsOn: 'build', type: Jar) {
+    from files(sourceSets.main.output.classesDir)
+    from configurations.runtime.asFileTree.files.collect { zipTree(it) }
+    manifest {
+      attributes 'Main-Class': 'eda095.project.server.Main'
+    }
+    archiveName = 'server.jar'
+}
+
+task uberjar_client(dependsOn: 'build', type: Jar) {
+    from files(sourceSets.main.output.classesDir)
+    from configurations.runtime.asFileTree.files.collect { zipTree(it) }
+    manifest {
+        attributes 'Main-Class': 'eda095.project.client.Main'
+    }
+    archiveName = 'client.jar'
+}

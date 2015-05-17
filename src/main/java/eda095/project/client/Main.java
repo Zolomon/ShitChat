@@ -6,9 +6,18 @@ import java.net.UnknownHostException;
 
 public class Main {
     public static void main(String[] args) {
+        String host = "localhost";
+        int port = 8888;
+        if (args.length != 2) {
+            System.out.printf("Attempting to connect to defaults. (%s:%d)\n", host, port);
+        } else {
+            host = args[0];
+            port = Integer.parseInt(args[1]);
+            System.out.printf("Connecting to %s:%d)\n", host, port);
+        }
         MessageBox mb = new MessageBox();
         try {
-            Socket s = new Socket("localhost", 8888);
+            Socket s = new Socket(host, port);
             ChatWindow cw = new ChatWindow(400, 300, "ShitChat", mb);
             InputThread it = new InputThread(mb, cw, s.getInputStream());
             OutputThread ot = new OutputThread(s, mb);
