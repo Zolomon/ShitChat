@@ -3,14 +3,11 @@ package eda095.project.server.lobby.commands;
 import eda095.project.server.lobby.Lobby;
 import eda095.project.server.lobby.LobbyClientState;
 import eda095.project.server.lobby.LobbyConnection;
-import eda095.project.server.lobby.database.DatabaseStore;
 import eda095.project.server.messages.ChatLobbyMessage;
 import eda095.project.server.messages.LobbyMessage;
 import eda095.project.server.messages.ServerLobbyMessage;
 import eda095.project.server.messages.WhisperLobbyMessage;
 import eda095.project.server.messages.decorators.BroadcastDecorator;
-import eda095.project.server.messages.decorators.SequentialListDecorator;
-import eda095.project.shared.Account;
 import eda095.project.shared.Profile;
 
 import java.util.ArrayList;
@@ -48,6 +45,27 @@ public class CommandParser {
             }
         });
 
+        addParser("help", "\\/help", (message, ckve) -> {
+            synchronized (this) {
+                Matcher matcher = ckve.pattern.matcher(message.getMessage());
+                matcher.matches();
+                ArrayList<String> helpMessage = new ArrayList<>();
+                helpMessage.add("Available commands: ");
+                helpMessage.add("  /help - show this help message");
+                helpMessage.add("  /login <username> - login as <username>");
+                helpMessage.add("  /msg <channel> <message> - send <message> to all users in <channel>");
+                helpMessage.add("  /editprofile <name> <location> <avatar URI> - to fill in the profile with your <name>, your <location> and your <avatar URI>");
+                helpMessage.add("  /finger <username> - to view the profile of <username>");
+                helpMessage.add("  /join <channel> - to join <channel>");
+                helpMessage.add("  /leave <channel> - to leave <channel>");
+                helpMessage.add("  /whisper <recipient> <message> - to send a private message to <recipient>");
+                helpMessage.add("  /quit - to quit the client");
+                for (String m : helpMessage) {
+                    lobby.processMessage(message, new ServerLobbyMessage(m));
+                }
+            }
+        });
+
         addParser("login", "\\/login (?<username>.*)", (message, ckve) -> {
             synchronized (this) {
                 Matcher matcher = ckve.pattern.matcher(message.getMessage());
@@ -72,9 +90,6 @@ public class CommandParser {
                 boolean exists = false;
                 for (LobbyConnection a : lobby.getConnections()) {
                     exists |= a.getState().getUsername().equals(recipient);
-                    System.out.println(a.getState().getUsername());
-                    System.out.println(a.getState().getUsername() == recipient);
-                    System.out.println(exists);
                 }
                 if (exists) {
                     lobby.processMessage(message, new WhisperLobbyMessage(state.getUsername(), recipient, cMessage));
@@ -93,7 +108,7 @@ public class CommandParser {
                 if (message.getConnection().getState().addChannel(channel)) {
                     lobby.processMessage(message,
                             new ChatLobbyMessage("server", channel,
-                                    message.getConnection().getState().getUsername()+ " has joined " + channel + "."));
+                                    message.getConnection().getState().getUsername() + " has joined " + channel + "."));
                 } else {
                     lobby.processMessage(message, new ServerLobbyMessage("You are already a member of " + channel + "."));
                 }
@@ -143,9 +158,9 @@ public class CommandParser {
                 Profile p = lobby.database.getProfile(username);
                 if (p != null) {
                     lobby.processMessage(message, new ServerLobbyMessage("username: " + username +
-                        " title: " + p.getTitle() +
-                        " location: " + p.getLocation() +
-                        " avatar URI: " + p.getAvatar_uri()));
+                            " title: " + p.getTitle() +
+                            " location: " + p.getLocation() +
+                            " avatar URI: " + p.getAvatar_uri()));
                 } else {
                     lobby.processMessage(message, new ServerLobbyMessage("Profile for " + username + "does not exist."));
                 }
