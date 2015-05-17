@@ -25,8 +25,7 @@ public class LobbyConnection {
         state = new LobbyClientState(username);
 
         // TODO(zol): Figure out a nice way to handle states, EX: finite state machine
-        this.outputMessageQueue.addLast(new ServerLobbyMessage("Welcome!"));
-        this.outputMessageQueue.addLast(new ServerLobbyMessage("Please enter your username"));
+        this.outputMessageQueue.addLast(new ServerLobbyMessage("Welcome! Type \"/help\" for further information."));
 
         createInputThread(socket);
         createOutputThread(socket);
