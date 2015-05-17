@@ -32,18 +32,18 @@ public class LobbyClientInputThread extends Thread {
             try {
                 String line = reader.readLine();
                 if (line == null) {
+                    System.out.println(connection.getState().getUsername() + " quit.");
                     // Line is null when the user has disconnected
                     reader.close();
                     connection.stop();
-                    return;
+                    break;
                 }
                 LobbyMessage message;
                 message = new ClientLobbyMessage(line);
                 connection.sendInput(message);
             } catch (IOException e) {
                 System.out.println("IOException: " + e.getMessage());
-                System.out.println("Exiting ClientInputThread");
-                return;
+                break;
             }
         }
     }
